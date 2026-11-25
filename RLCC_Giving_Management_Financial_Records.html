@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="charter">
+  <title>RLCC Financial Stewardship Report — FY 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces */
+      --background: #f7f4ec;
+      --surface-container-low: #fffdf8;
+      --surface-container: #ece5d4;
+      --surface-container-high: #e3dac4;
+
+      /* Ink */
+      --on-surface: #1c1f26;
+      --on-surface-variant: #4f5360;
+
+      /* Rules */
+      --outline: #b08d57;
+      --outline-variant: #d9cfb8;
+
+      /* Accents */
+      --primary: #14213d;
+      --on-primary: #f7f4ec;
+      --primary-container: #e3e6ee;
+      --on-primary-container: #14213d;
+      --secondary: #2d5a4a;
+      --tertiary: #8a6a35;
+      --error: #9b2c2c;
+      --on-error: #f7f4ec;
+
+      /* Data series, in order of use */
+      --data-1: #14213d;
+      --data-2: #8a6a35;
+      --data-3: #2d5a4a;
+      --data-4: #5b7aa0;
+      --data-context: #c2bba9;
+
+      /* Fonts */
+      --font-headline: 'Libre Caslon Text', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-label: 'Inter', sans-serif;
+
+      /* Shape */
+      --rounded: 0.125rem;
+      --rounded-lg: 0.125rem;
+      --rounded-full: 0.125rem;
+
+      /* Style effects */
+      --brass-rule: 2px solid var(--outline);
+      --hairline: 1px solid var(--outline-variant);
+      --leaf-underline: 0 1px 0 var(--outline-variant);
+      --brass-on-navy: color-mix(in srgb, var(--outline) 75%, var(--on-primary));
+      --lede-on-navy: color-mix(in srgb, var(--on-primary) 78%, var(--primary));
+      --primary-hover: color-mix(in srgb, var(--primary) 88%, var(--on-surface));
+      --positive-bg: color-mix(in srgb, var(--secondary) 10%, var(--surface-container-low));
+      --warning-bg: color-mix(in srgb, var(--tertiary) 10%, var(--surface-container-low));
+      --error-bg: color-mix(in srgb, var(--error) 10%, var(--surface-container-low));
+
+      /* Semantic */
+      --positive: var(--secondary);
+      --warning: var(--tertiary);
+      --focus: var(--primary);
+
+      /* Dashboard type scale */
+      --display-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+      --headline-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+      --subhead-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 6rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: clip; margin: 0; padding: 0; }
+    header { position: static !important; }
+
+    body {
+      background: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-grid {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      max-width: 1240px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Focus rings */
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Title Band (Charter #1 & #2) */
+    .title-band {
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: var(--space-xl) var(--space-lg);
+      border-bottom: 3px solid var(--outline);
+    }
+
+    .title-band-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-lg);
+      align-items: end;
+    }
+
+    .title-kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brass-on-navy);
+      margin: 0 0 var(--space-xs);
+    }
+
+    .title-band h1 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--display-size);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--on-primary);
+      margin: 0;
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .title-band .lede {
+      font-size: var(--body-size);
+      color: var(--lede-on-navy);
+      margin: var(--space-sm) 0 0;
+      max-width: 65ch;
+      line-height: 1.5;
+    }
+
+    .report-stamp {
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-md);
+      text-align: right;
+      color: var(--on-primary);
+    }
+
+    .report-stamp-label {
+      display: block;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brass-on-navy);
+    }
+
+    .report-stamp-value {
+      display: block;
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-variant-numeric: tabular-nums lining-nums;
+      margin-top: var(--space-xs);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: var(--space-md);
+      align-items: end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .control-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+    }
+
+    .segmented-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .seg-btn, .btn-secondary, .btn-primary, .tab-btn {
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      font-weight: 500;
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      border-radius: var(--rounded);
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+    }
+
+    .seg-btn {
+      background: transparent;
+      color: var(--on-surface);
+      border: 1px solid var(--outline-variant);
+      padding: 0 var(--space-sm);
+      font-size: 0.875rem;
+    }
+
+    .seg-btn:hover {
+      background: var(--surface-container);
+    }
+
+    .seg-btn[aria-pressed="true"] {
+      background: var(--primary);
+      color: var(--on-primary);
+      border: 1px solid var(--primary);
+    }
+
+    .select-input {
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      color: var(--on-surface);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-md);
+      width: 100%;
+      cursor: pointer;
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--on-surface-variant) 50%), linear-gradient(135deg, var(--on-surface-variant) 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .select-input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-container);
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .filter-context-note {
+      grid-column: 1 / -1;
+      border-top: var(--hairline);
+      padding-top: var(--space-sm);
+      font-size: 0.875rem;
+      color: var(--on-surface-variant);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .stamp-tag {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid var(--outline);
+      color: var(--tertiary);
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded);
+    }
+
+    .stamp-tag.is-green {
+      border-color: var(--secondary);
+      color: var(--secondary);
+      background: var(--positive-bg);
+    }
+
+    /* KPI Figure Cards (Charter #3 & #4) */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+      gap: var(--space-lg);
+    }
+
+    .figure-card {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-xs);
+    }
+
+    .figure-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+    }
+
+    .figure-value {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: clamp(1.5rem, 1.25rem + 0.8vw, 2rem);
+      line-height: 1.15;
+      font-variant-numeric: tabular-nums lining-nums;
+      color: var(--on-surface);
+      margin-top: var(--space-xs);
+    }
+
+    .figure-delta {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--tertiary);
+      font-variant-numeric: tabular-nums lining-nums;
+      margin-top: var(--space-xs);
+    }
+
+    .figure-delta.positive { color: var(--secondary); }
+    .figure-delta.negative { color: var(--error); }
+    .figure-sub {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Panels & Section Heads (Charter #5) */
+    .panel {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      container-type: inline-size;
+    }
+
+    .section-head {
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-sm);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: var(--space-sm);
+    }
+
+    .section-kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin: 0 0 var(--space-xs);
+    }
+
+    .section-title {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--headline-size);
+      line-height: 1.2;
+      color: var(--on-surface);
+      margin: 0;
+    }
+
+    .section-note {
+      font-size: 0.875rem;
+      color: var(--on-surface-variant);
+      margin: var(--space-xs) 0 0;
+      max-width: 65ch;
+    }
+
+    /* Asymmetric Primary Layout */
+    .split-primary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .split-equal {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .split-secondary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+      gap: var(--space-lg);
+    }
+
+    .chart-box {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+    }
+
+    .chart-box-sm {
+      position: relative;
+      width: 100%;
+      min-height: 260px;
+    }
+
+    /* Local View Tabs inside a panel */
+    .local-tabs {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      background: transparent;
+      border: 1px solid var(--outline-variant);
+      color: var(--on-surface-variant);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tab-btn:hover {
+      background: var(--surface-container);
+      color: var(--on-surface);
+    }
+
+    .tab-btn[aria-selected="true"] {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+
+    /* Category Allocation List */
+    .allocation-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .alloc-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-xs) var(--space-md);
+      padding: var(--space-sm);
+      border-bottom: var(--hairline);
+      cursor: pointer;
+      border-radius: var(--rounded);
+      transition: background-color var(--dur-micro) var(--ease-out);
+      text-align: left;
+      background: transparent;
+      border-left: 3px solid transparent;
+      border-top: none;
+      border-right: none;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .alloc-row:hover {
+      background: var(--surface-container);
+    }
+
+    .alloc-row[aria-pressed="true"] {
+      background: var(--primary-container);
+      border-left-color: var(--primary);
+    }
+
+    .alloc-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+
+    .alloc-amount {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface);
+      text-align: right;
+    }
+
+    .alloc-bar-wrap {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .alloc-bar-track {
+      height: 6px;
+      background: var(--surface-container);
+      border-radius: var(--rounded);
+      overflow: hidden;
+    }
+
+    .alloc-bar-fill {
+      height: 100%;
+      background: var(--data-1);
+      border-radius: var(--rounded);
+      transition: width var(--dur-short) var(--ease-out);
+    }
+
+    .alloc-meta {
+      font-size: 0.75rem;
+      color: var(--on-surface-variant);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    /* Tables (Charter style: no vertical rules, header band, tabular right-aligned figures) */
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9375rem;
+    }
+
+    thead th {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--outline);
+      white-space: nowrap;
+    }
+
+    thead th.num, tbody td.num, tfoot td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    tbody td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--hairline);
+      color: var(--on-surface);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: var(--surface-container);
+    }
+
+    tbody tr.is-selected {
+      background: var(--primary-container);
+    }
+
+    tfoot td {
+      padding: var(--space-sm) var(--space-md);
+      border-top: var(--brass-rule);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      background: var(--surface-container-low);
+    }
+
+    .sort-btn {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      cursor: pointer;
+      padding: var(--space-xs) 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sort-btn:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: var(--rounded);
+      border: 1px solid var(--outline-variant);
+    }
+
+    .status-closed {
+      color: var(--secondary);
+      border-color: var(--secondary);
+      background: var(--positive-bg);
+    }
+
+    .status-open {
+      color: var(--tertiary);
+      border-color: var(--outline);
+      background: var(--warning-bg);
+    }
+
+    /* Service Split Comparison Cards inside Panel */
+    .service-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-md);
+    }
+
+    .service-stat {
+      padding: var(--space-md);
+      background: var(--background);
+      border-top: 2px solid var(--data-1);
+      border-bottom: var(--hairline);
+    }
+
+    .service-stat.is-swc2 {
+      border-top-color: var(--data-2);
+    }
+
+    .service-stat-title {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+    }
+
+    .service-stat-val {
+      font-family: var(--font-headline);
+      font-size: 1.5rem;
+      font-variant-numeric: tabular-nums lining-nums;
+      margin: var(--space-xs) 0;
+    }
+
+    .service-stat-meta {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Footer / Sources */
+    .report-footer {
+      border-top: var(--brass-rule);
+      padding: var(--space-lg) 0 var(--space-xl);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-md);
+      font-size: 0.875rem;
+      color: var(--on-surface-variant);
+    }
+
+    .report-footer p {
+      margin: 0;
+      max-width: 72ch;
+    }
+
+    /* Container & Responsive Breakpoints */
+    @container (max-width: 480px) {
+      .service-pair {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .split-primary,
+      .split-equal,
+      .split-secondary {
+        grid-template-columns: 1fr;
+      }
+      .filter-bar {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .title-band-inner {
+        grid-template-columns: 1fr;
+      }
+      .report-stamp {
+        text-align: left;
+        justify-self: start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+        padding: var(--space-md);
+        gap: var(--space-md);
+      }
+      .title-band {
+        padding: var(--space-lg) var(--space-md);
+      }
+      .title-band-inner {
+        padding: 0;
+      }
+      .filter-bar {
+        grid-template-columns: 1fr;
+        padding: var(--space-md);
+      }
+      .panel {
+        padding: var(--space-md);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="title-band">
+    <div class="title-band-inner">
+      <div>
+        <p class="title-kicker">Fiscal Year 2026 Public Stewardship Report &middot; January 1 – November 22, 2026</p>
+        <h1>RLCC Financial Stewardship Dashboard</h1>
+        <p class="lede">
+          Public summary of Sunday worship collections, cheque deposits, categorized ministry disbursements, and monthly fiscal closing status. All individual giver, staff, and steward identities have been omitted.
+        </p>
+      </div>
+      <div class="report-stamp">
+        <span class="report-stamp-label">Reporting Scope</span>
+        <span class="report-stamp-value" id="header-scope-value">Jan – Nov 2026 (46 Sundays)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-grid">
+    <!-- Filter Controls -->
+    <section class="filter-bar" aria-label="Dashboard Filters">
+      <div class="control-group">
+        <span class="control-label">Quarter Filter</span>
+        <div class="segmented-row" role="group" aria-label="Quarter Selection">
+          <button type="button" class="seg-btn" data-quarter="ALL" aria-pressed="true" onclick="setQuarterFilter('ALL')">Full YTD</button>
+          <button type="button" class="seg-btn" data-quarter="Q1" aria-pressed="false" onclick="setQuarterFilter('Q1')">Q1</button>
+          <button type="button" class="seg-btn" data-quarter="Q2" aria-pressed="false" onclick="setQuarterFilter('Q2')">Q2</button>
+          <button type="button" class="seg-btn" data-quarter="Q3" aria-pressed="false" onclick="setQuarterFilter('Q3')">Q3</button>
+          <button type="button" class="seg-btn" data-quarter="Q4" aria-pressed="false" onclick="setQuarterFilter('Q4')">Q4</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="month-select">Specific Month</label>
+        <select id="month-select" class="select-input" onchange="setMonthFilter(this.value)">
+          <option value="ALL">All Months in Period</option>
+          <option value="1">January 2026</option>
+          <option value="2">February 2026</option>
+          <option value="3">March 2026</option>
+          <option value="4">April 2026</option>
+          <option value="5">May 2026</option>
+          <option value="6">June 2026</option>
+          <option value="7">July 2026</option>
+          <option value="8">August 2026</option>
+          <option value="9">September 2026</option>
+          <option value="10">October 2026</option>
+          <option value="11">November 2026 (Open)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="service-select">Worship Service (Collections)</label>
+        <select id="service-select" class="select-input" onchange="setServiceFilter(this.value)">
+          <option value="ALL">All Services (SWC1 + SWC2)</option>
+          <option value="SWC1">SWC1 — First Service</option>
+          <option value="SWC2">SWC2 — Second Service</option>
+        </select>
+      </div>
+
+      <button type="button" id="reset-filters-btn" class="btn-secondary" onclick="resetAllFilters()" disabled>Reset Filters</button>
+
+      <div class="filter-context-note">
+        <span id="active-filter-summary">Showing all recorded FY 2026 activity from January 4 through November 22, 2026.</span>
+        <span id="category-filter-pill" class="stamp-tag" hidden></span>
+      </div>
+    </section>
+
+    <!-- Headline KPI Cards -->
+    <section class="kpi-grid" aria-label="Key Financial Figures">
+      <article class="figure-card">
+        <span class="figure-label">Total Collections</span>
+        <div class="figure-value" id="kpi-collections">₱0.00</div>
+        <div class="figure-delta positive" id="kpi-collections-mix">Cash 0% &middot; Cheques 0%</div>
+        <div class="figure-sub" id="kpi-collections-sub">0 Sundays recorded</div>
+      </article>
+
+      <article class="figure-card">
+        <span class="figure-label">Total Disbursements</span>
+        <div class="figure-value" id="kpi-disbursements">₱0.00</div>
+        <div class="figure-delta" id="kpi-disbursements-ratio">0% of collections</div>
+        <div class="figure-sub" id="kpi-disbursements-sub">Church-wide ministry &amp; operations</div>
+      </article>
+
+      <article class="figure-card">
+        <span class="figure-label">Net Operating Position</span>
+        <div class="figure-value" id="kpi-net">₱0.00</div>
+        <div class="figure-delta positive" id="kpi-net-margin">0% net retention</div>
+        <div class="figure-sub" id="kpi-net-sub">Collections minus disbursements</div>
+      </article>
+
+      <article class="figure-card">
+        <span class="figure-label">Envelope &amp; Service Volume</span>
+        <div class="figure-value" id="kpi-envelopes">0</div>
+        <div class="figure-delta" id="kpi-avg-sunday">₱0 avg / Sunday</div>
+        <div class="figure-sub" id="kpi-avg-envelope">₱0 avg / envelope</div>
+      </article>
+    </section>
+
+    <!-- Primary Analytics: Monthly Trend + Disbursement Allocation -->
+    <section class="split-primary" aria-label="Cash Flow Trends and Expense Allocation">
+      <article class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Cash Flow Schedule</p>
+            <h2 class="section-title">Monthly Collections vs. Disbursements</h2>
+            <p class="section-note">Click any month bar to focus the dashboard on that month; click again to clear.</p>
+          </div>
+          <div class="local-tabs" role="tablist" aria-label="Cash Flow Chart Mode">
+            <button type="button" class="tab-btn" id="mode-monthly-btn" role="tab" aria-selected="true" onclick="setFlowChartMode('monthly')">Monthly Flow</button>
+            <button type="button" class="tab-btn" id="mode-cumulative-btn" role="tab" aria-selected="false" onclick="setFlowChartMode('cumulative')">Cumulative YTD</button>
+          </div>
+        </div>
+        <div class="chart-box">
+          <canvas id="cashflow-chart" aria-label="Monthly collections and disbursements chart"></canvas>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Expense Stewardship</p>
+            <h2 class="section-title">Disbursements by Category</h2>
+            <p class="section-note">Aggregated church-wide outflows. Select a category to inspect its monthly rhythm.</p>
+          </div>
+        </div>
+        <div class="allocation-list" id="category-allocation-list" aria-label="Disbursement Categories"></div>
+      </article>
+    </section>
+
+    <!-- Secondary Analytics: Service Comparison + Tender & Bank Mix -->
+    <section class="split-equal" aria-label="Service Breakdown and Tender Mix">
+      <article class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Sunday Worship Services</p>
+            <h2 class="section-title">SWC1 vs. SWC2 Collection Profile</h2>
+            <p class="section-note">Comparison of first-service (SWC1) and second-service (SWC2) cash, cheque, and envelope counts.</p>
+          </div>
+        </div>
+        <div class="service-pair">
+          <div class="service-stat">
+            <div class="service-stat-title">SWC1 &mdash; First Service</div>
+            <div class="service-stat-val" id="swc1-total">₱0</div>
+            <div class="service-stat-meta" id="swc1-meta">0 envelopes &middot; 0% share</div>
+          </div>
+          <div class="service-stat is-swc2">
+            <div class="service-stat-title">SWC2 &mdash; Second Service</div>
+            <div class="service-stat-val" id="swc2-total">₱0</div>
+            <div class="service-stat-meta" id="swc2-meta">0 envelopes &middot; 0% share</div>
+          </div>
+        </div>
+        <div class="chart-box-sm">
+          <canvas id="service-chart" aria-label="Service comparison chart"></canvas>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Tender Composition</p>
+            <h2 class="section-title" id="tender-panel-title">Cash Denominations &amp; Cheque Mix</h2>
+            <p class="section-note" id="tender-panel-note">Physical currency breakdown counted across Sunday worship collections.</p>
+          </div>
+          <div class="local-tabs" role="tablist" aria-label="Tender View">
+            <button type="button" class="tab-btn" id="tender-cash-btn" role="tab" aria-selected="true" onclick="setTenderView('cash')">Cash Bills &amp; Coins</button>
+            <button type="button" class="tab-btn" id="tender-cheque-btn" role="tab" aria-selected="false" onclick="setTenderView('cheque')">Cheques by Bank</button>
+          </div>
+        </div>
+        <div class="chart-box-sm">
+          <canvas id="tender-chart" aria-label="Tender composition chart"></canvas>
+        </div>
+        <div class="table-scroll" id="tender-summary-table-wrap"></div>
+      </article>
+    </section>
+
+    <!-- Community Participation & Fiscal Closing Status -->
+    <section class="split-secondary" aria-label="Community Base and Closing Schedule">
+      <article class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Congregation Profile</p>
+            <h2 class="section-title">Active Giver Base by Community</h2>
+            <p class="section-note">202 active anonymized giver profiles grouped strictly by ministry community; no personal identities are displayed.</p>
+          </div>
+        </div>
+        <div class="chart-box-sm">
+          <canvas id="community-chart" aria-label="Active giver profiles by ministry community"></canvas>
+        </div>
+        <div class="filter-context-note" style="border-top: var(--hairline); padding-top: var(--space-sm);">
+          <span>Profile Types: <strong>165</strong> Individual &middot; <strong>34</strong> Couple &middot; <strong>1</strong> Family &middot; <strong>2</strong> Organization</span>
+          <span class="stamp-tag">202 Active Profiles</span>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Fiscal Governance</p>
+            <h2 class="section-title">FY 2026 Monthly Financial &amp; Posting Summary</h2>
+            <p class="section-note">Sortable monthly cash flow statement alongside official FY 2026 period-closing status.</p>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table id="monthly-summary-table">
+            <thead>
+              <tr>
+                <th><button type="button" class="sort-btn" onclick="sortMonthlyTable('month')">Month</button></th>
+                <th class="num"><button type="button" class="sort-btn" onclick="sortMonthlyTable('envelopes')">Env.</button></th>
+                <th class="num"><button type="button" class="sort-btn" onclick="sortMonthlyTable('cash')">Cash</button></th>
+                <th class="num"><button type="button" class="sort-btn" onclick="sortMonthlyTable('cheque')">Cheques</button></th>
+                <th class="num"><button type="button" class="sort-btn" onclick="sortMonthlyTable('collections')">Inflow</button></th>
+                <th class="num"><button type="button" class="sort-btn" onclick="sortMonthlyTable('disbursements')">Outflow</button></th>
+                <th class="num"><button type="button" class="sort-btn" onclick="sortMonthlyTable('net')">Net</button></th>
+                <th>Posting</th>
+              </tr>
+            </thead>
+            <tbody id="monthly-table-body"></tbody>
+            <tfoot id="monthly-table-foot"></tfoot>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <footer class="report-footer">
+      <p>
+        <strong>Data Grounding &amp; Privacy Notice:</strong> Derived from RLCC FY 2026 Cash Count Records (91 service counts across 46 Sundays, Jan 4 – Nov 22, 2026), Cheque Register (33 deposits), Categorized Disbursement Records (116 entries), Posting Status Schedule (Months 1–12), and Community Directory Aggregates. All personal names, account numbers, and individual transaction ledgers are omitted for public reporting.
+      </p>
+      <p>
+        <strong>Note on Coverage:</strong> November 2026 remains open for posting as of November 23, 2026. December 2026 reflects zero recorded collections to date.
+      </p>
+    </footer>
+  </main>
+
+  <script>
+    // =========================================================================
+    // GROUNDED ANONYMIZED SOURCE DATA (RLCC FY 2026: Jan 1 - Nov 22, 2026)
+    // Zero individual people's names anywhere in data or labels.
+    // =========================================================================
+
+    // [date, month, quarter, swc, [1000,500,200,100,50,20,10,5,1,0.25], cash, cheque, total, envelopes]
+    const CASH_COUNTS = [
+      [`1/4/2026`, 1, `Q1`, `SWC1`, [11,2,0,17,15,1,1,0,1,0], 14481, 0, 14481, 22],
+      [`1/4/2026`, 1, `Q1`, `SWC2`, [10,7,0,29,11,4,2,6,0,0], 17080, 0, 17080, 34],
+      [`1/11/2026`, 1, `Q1`, `SWC1`, [53,1,0,10,9,5,1,19,1,0], 55156, 122016, 177172, 25],
+      [`1/11/2026`, 1, `Q1`, `SWC2`, [31,8,0,23,24,3,0,8,27,1], 38627.25, 8000, 46627.25, 34],
+      [`1/18/2026`, 1, `Q1`, `SWC1`, [1,2,0,23,7,7,4,4,6,0], 4856, 0, 4856, 29],
+      [`1/18/2026`, 1, `Q1`, `SWC2`, [7,7,0,16,5,3,0,0,0,0], 12410, 34710, 47120, 23],
+      [`2/1/2026`, 2, `Q1`, `SWC1`, [0,0,1,17,9,1,1,6,0,0], 2410, 21500, 23910, 21],
+      [`2/1/2026`, 2, `Q1`, `SWC2`, [31,8,2,46,10,3,0,3,5,0], 40580, 0, 40580, 30],
+      [`2/8/2026`, 2, `Q1`, `SWC1`, [1,4,0,14,6,1,1,2,0,0], 4740, 15000, 19740, 18],
+      [`2/8/2026`, 2, `Q1`, `SWC2`, [18,8,0,26,4,0,0,1,2,0], 24807, 49460, 74267, 33],
+      [`2/15/2026`, 2, `Q1`, `SWC1`, [2,2,0,5,5,2,0,0,0,0], 3790, 0, 3790, 10],
+      [`2/15/2026`, 2, `Q1`, `SWC2`, [14,6,2,27,5,1,2,0,2,0], 20392, 0, 20392, 29],
+      [`2/22/2026`, 2, `Q1`, `SWC1`, [0,3,0,20,5,3,0,1,0,0], 3815, 0, 3815, 17],
+      [`2/22/2026`, 2, `Q1`, `SWC2`, [28,6,0,12,4,0,0,0,0,0], 32400, 0, 32400, 24],
+      [`3/1/2026`, 3, `Q1`, `SWC1`, [0,2,0,13,2,2,2,8,2,0], 2502, 21500, 24002, 12],
+      [`3/1/2026`, 3, `Q1`, `SWC2`, [24,12,0,39,17,7,2,5,13,0], 34948, 0, 34948, 45],
+      [`3/8/2026`, 3, `Q1`, `SWC1`, [15,0,1,11,3,1,0,7,12,0], 16517, 0, 16517, 15],
+      [`3/8/2026`, 3, `Q1`, `SWC2`, [7,4,0,30,10,0,1,0,0,0], 12510, 8000, 20510, 22],
+      [`3/15/2026`, 3, `Q1`, `SWC1`, [16,2,1,17,6,1,1,4,5,1], 19255.25, 0, 19255.25, 25],
+      [`3/15/2026`, 3, `Q1`, `SWC2`, [27,7,0,26,10,0,0,1,0,0], 33605, 0, 33605, 27],
+      [`3/22/2026`, 3, `Q1`, `SWC1`, [0,0,0,0,0,0,0,0,0,0], 0, 0, 0, 23],
+      [`3/29/2026`, 3, `Q1`, `SWC1`, [3,3,0,12,10,1,3,3,1,0], 6266, 21500, 27766, 22],
+      [`3/29/2026`, 3, `Q1`, `SWC2`, [10,2,0,23,5,2,0,0,0,0], 13590, 64180, 77770, 25],
+      [`4/5/2026`, 4, `Q2`, `SWC1`, [0,1,0,14,8,3,5,11,26,0], 2491, 0, 2491, 24],
+      [`4/5/2026`, 4, `Q2`, `SWC2`, [26,9,0,42,14,6,1,5,0,0], 35555, 0, 35555, 46],
+      [`4/12/2026`, 4, `Q2`, `SWC1`, [15,0,1,15,4,1,1,7,5,0], 16970, 0, 16970, 12],
+      [`4/12/2026`, 4, `Q2`, `SWC2`, [15,4,0,8,7,0,3,0,0,0], 18180, 87178.5, 105358.5, 25],
+      [`4/19/2026`, 4, `Q2`, `SWC1`, [4,2,0,7,4,0,0,0,0,0], 5900, 0, 5900, 11],
+      [`4/19/2026`, 4, `Q2`, `SWC2`, [34,10,0,30,12,2,4,5,7,0], 42712, 0, 42712, 44],
+      [`4/26/2026`, 4, `Q2`, `SWC1`, [0,0,0,10,7,0,0,0,0,0], 1350, 0, 1350, 7],
+      [`4/26/2026`, 4, `Q2`, `SWC2`, [19,3,0,26,10,4,1,6,8,0], 23728, 39000, 62728, 24],
+      [`5/3/2026`, 5, `Q2`, `SWC1`, [1,35,0,27,11,1,0,0,0,0], 21770, 34500, 56270, 22],
+      [`5/3/2026`, 5, `Q2`, `SWC2`, [26,7,0,31,17,1,1,1,2,0], 33487, 0, 33487, 29],
+      [`5/10/2026`, 5, `Q2`, `SWC1`, [2,6,1,16,4,2,0,12,3,0], 7103, 0, 7103, 22],
+      [`5/10/2026`, 5, `Q2`, `SWC2`, [7,10,0,17,12,0,0,0,0,0], 14300, 0, 14300, 24],
+      [`5/17/2026`, 5, `Q2`, `SWC1`, [4,1,0,9,5,1,4,1,0,0], 5715, 0, 5715, 14],
+      [`5/17/2026`, 5, `Q2`, `SWC2`, [13,1,0,15,14,0,0,0,0,0], 15700, 0, 15700, 19],
+      [`5/24/2026`, 5, `Q2`, `SWC1`, [14,2,2,16,7,2,1,1,13,0], 17418, 0, 17418, 24],
+      [`5/24/2026`, 5, `Q2`, `SWC2`, [28,3,0,37,10,5,0,3,1,0], 33816, 0, 33816, 27],
+      [`5/31/2026`, 5, `Q2`, `SWC1`, [38,8,0,19,6,2,2,9,10,0], 44315, 0, 44315, 26],
+      [`5/31/2026`, 5, `Q2`, `SWC2`, [7,11,0,12,11,0,0,0,0,0], 14250, 0, 14250, 26],
+      [`6/7/2026`, 6, `Q2`, `SWC1`, [0,3,0,19,7,2,1,2,0,0], 3810, 13000, 16810, 20],
+      [`6/7/2026`, 6, `Q2`, `SWC2`, [14,3,1,27,17,0,1,3,5,0], 19280, 20000, 39280, 34],
+      [`6/14/2026`, 6, `Q2`, `SWC1`, [0,4,0,10,4,1,1,0,0,0], 3230, 0, 3230, 15],
+      [`6/14/2026`, 6, `Q2`, `SWC2`, [22,4,0,23,6,0,0,0,0,0], 26600, 0, 26600, 24],
+      [`6/21/2026`, 6, `Q2`, `SWC1`, [9,5,0,12,9,0,0,2,7,0], 13167, 131300, 144467, 26],
+      [`6/21/2026`, 6, `Q2`, `SWC2`, [22,5,0,28,12,4,0,4,0,0], 28000, 0, 28000, 23],
+      [`6/28/2026`, 6, `Q2`, `SWC1`, [4,4,0,12,1,3,1,10,0,0], 7370, 21500, 28870, 22],
+      [`6/28/2026`, 6, `Q2`, `SWC2`, [8,8,0,19,2,1,0,6,0,0], 14050, 0, 14050, 20],
+      [`7/5/2026`, 7, `Q3`, `SWC1`, [10,1,0,34,10,103,1,1,0,0], 16475, 13000, 29475, 27],
+      [`7/5/2026`, 7, `Q3`, `SWC2`, [22,4,0,35,6,1,2,10,7,0], 27897, 0, 27897, 28],
+      [`7/12/2026`, 7, `Q3`, `SWC1`, [6,0,0,4,5,3,0,1,7,0], 6722, 0, 6722, 19],
+      [`7/12/2026`, 7, `Q3`, `SWC2`, [8,2,0,11,7,1,0,0,0,0], 10470, 0, 10470, 17],
+      [`7/19/2026`, 7, `Q3`, `SWC1`, [9,1,0,9,2,3,2,9,1,0], 10626, 0, 10626, 9],
+      [`7/19/2026`, 7, `Q3`, `SWC2`, [12,13,0,20,9,0,0,10,12,0], 21012, 0, 21012, 42],
+      [`7/26/2026`, 7, `Q3`, `SWC1`, [7,0,0,14,4,4,2,6,4,0], 8734, 0, 8734, 14],
+      [`7/26/2026`, 7, `Q3`, `SWC2`, [14,0,1,19,1,0,0,0,0,0], 16150, 0, 16150, 20],
+      [`8/2/2026`, 8, `Q3`, `SWC1`, [1,5,0,10,6,3,0,0,0,0], 4860, 13000, 17860, 13],
+      [`8/2/2026`, 8, `Q3`, `SWC2`, [22,10,11,35,11,5,3,6,3,0], 33413, 0, 33413, 35],
+      [`8/9/2026`, 8, `Q3`, `SWC1`, [18,2,0,9,7,1,2,3,0,0], 20305, 21500, 41805, 15],
+      [`8/9/2026`, 8, `Q3`, `SWC2`, [26,6,0,15,3,1,0,1,4,4], 30680, 136100, 166780, 21],
+      [`8/16/2026`, 8, `Q3`, `SWC1`, [0,3,0,14,2,1,1,15,5,0], 3110, 0, 3110, 14],
+      [`8/16/2026`, 8, `Q3`, `SWC2`, [181,9,0,37,12,1,5,1,2,0], 189877, 0, 189877, 39],
+      [`8/23/2026`, 8, `Q3`, `SWC1`, [11,6,0,6,8,1,1,7,0,0], 15065, 0, 15065, 19],
+      [`8/23/2026`, 8, `Q3`, `SWC2`, [16,3,0,36,10,1,4,1,5,0], 21670, 0, 21670, 33],
+      [`8/30/2026`, 8, `Q3`, `SWC1`, [3,4,0,10,2,3,0,1,0,0], 6165, 0, 6165, 14],
+      [`8/30/2026`, 8, `Q3`, `SWC2`, [8,2,0,29,5,3,0,0,1,0], 12211, 0, 12211, 22],
+      [`9/6/2026`, 9, `Q3`, `SWC1`, [3,1,0,19,6,0,0,0,0,0], 5700, 34500, 40200, 19],
+      [`9/6/2026`, 9, `Q3`, `SWC2`, [29,4,0,15,3,1,2,6,19,0], 32739, 0, 32739, 24],
+      [`9/13/2026`, 9, `Q3`, `SWC1`, [3,1,0,21,5,0,1,2,0,0], 5870, 0, 5870, 17],
+      [`9/13/2026`, 9, `Q3`, `SWC2`, [9,2,0,17,9,1,4,2,3,0], 12223, 0, 12223, 31],
+      [`9/20/2026`, 9, `Q3`, `SWC1`, [24,3,0,12,9,2,4,10,0,0], 27280, 0, 27280, 25],
+      [`9/20/2026`, 9, `Q3`, `SWC2`, [11,4,0,14,10,4,3,3,2,0], 15027, 0, 15027, 29],
+      [`9/27/2026`, 9, `Q3`, `SWC1`, [11,3,0,2,2,2,1,5,0,0], 12875, 39810, 52685, 21],
+      [`9/27/2026`, 9, `Q3`, `SWC2`, [4,4,0,25,6,2,0,0,0,0], 8840, 0, 8840, 20],
+      [`10/4/2026`, 10, `Q4`, `SWC1`, [12,3,0,44,11,1,2,4,2,0], 18512, 13000, 31512, 35],
+      [`10/4/2026`, 10, `Q4`, `SWC2`, [17,12,0,13,9,0,0,0,0,0], 24750, 0, 24750, 19],
+      [`10/11/2026`, 10, `Q4`, `SWC1`, [23,5,0,25,11,1,3,12,0,0], 28660, 35500, 64160, 30],
+      [`10/11/2026`, 10, `Q4`, `SWC2`, [2,3,0,2,6,2,1,4,5,0], 4075, 0, 4075, 10],
+      [`10/18/2026`, 10, `Q4`, `SWC1`, [10,1,0,38,12,2,3,12,6,0], 15036, 0, 15036, 35],
+      [`10/18/2026`, 10, `Q4`, `SWC2`, [13,6,0,14,6,0,0,1,5,0], 17710, 10000, 27710, 23],
+      [`10/25/2026`, 10, `Q4`, `SWC1`, [3,3,1,27,3,2,1,2,0,0], 7610, 0, 7610, 20],
+      [`10/25/2026`, 10, `Q4`, `SWC2`, [14,4,0,13,4,0,0,0,9,0], 17509, 0, 17509, 21],
+      [`11/1/2026`, 11, `Q4`, `SWC1`, [23,3,0,14,3,1,0,12,6,0], 26136, 0, 26136, 17],
+      [`11/1/2026`, 11, `Q4`, `SWC2`, [29,10,0,23,1,0,0,0,0,0], 36350, 0, 36350, 21],
+      [`11/8/2026`, 11, `Q4`, `SWC1`, [9,4,0,6,2,2,0,0,0,0], 11740, 22000, 33740, 16],
+      [`11/8/2026`, 11, `Q4`, `SWC2`, [5,4,0,7,3,0,0,0,0,0], 7850, 0, 7850, 0],
+      [`11/15/2026`, 11, `Q4`, `SWC1`, [6,2,0,15,3,0,0,0,0,0], 8650, 0, 8650, 15],
+      [`11/15/2026`, 11, `Q4`, `SWC2`, [4,11,0,19,9,1,0,2,0,0], 11880, 0, 11880, 23],
+      [`11/22/2026`, 11, `Q4`, `SWC1`, [7,2,0,11,5,0,0,0,0,0], 9350, 0, 9350, 15],
+      [`11/22/2026`, 11, `Q4`, `SWC2`, [11,5,0,20,4,0,0,0,0,0], 15700, 0, 15700, 20]
+    ];
+
+    // [month, quarter, swc, bank, amount]
+    const CHEQUES = [
+      [1, `Q1`, `SWC1`, `Unspecified Bank`, 107016],
+      [1, `Q1`, `SWC1`, `BPI`, 15000],
+      [1, `Q1`, `SWC2`, `Unspecified Bank`, 8000],
+      [1, `Q1`, `SWC2`, `Metrobank`, 34710],
+      [2, `Q1`, `SWC1`, `BPI`, 21500],
+      [2, `Q1`, `SWC1`, `BPI`, 15000],
+      [2, `Q1`, `SWC2`, `Chinabank`, 8000],
+      [2, `Q1`, `SWC2`, `Metrobank`, 41460],
+      [3, `Q1`, `SWC1`, `BPI`, 21500],
+      [3, `Q1`, `SWC2`, `Chinabank`, 8000],
+      [3, `Q1`, `SWC1`, `BPI`, 21500],
+      [3, `Q1`, `SWC2`, `Unspecified Bank`, 64180],
+      [4, `Q2`, `SWC2`, `Metrobank`, 87178.5],
+      [4, `Q2`, `SWC2`, `Metrobank`, 39000],
+      [5, `Q2`, `SWC1`, `Unspecified Bank`, 13000],
+      [5, `Q2`, `SWC1`, `Unspecified Bank`, 21500],
+      [6, `Q2`, `SWC1`, `Unspecified Bank`, 13000],
+      [6, `Q2`, `SWC2`, `Unspecified Bank`, 20000],
+      [6, `Q2`, `SWC1`, `Unspecified Bank`, 131300],
+      [6, `Q2`, `SWC1`, `Unspecified Bank`, 21500],
+      [7, `Q3`, `SWC1`, `BPI`, 13000],
+      [8, `Q3`, `SWC1`, `BPI`, 13000],
+      [8, `Q3`, `SWC1`, `BPI`, 21500],
+      [8, `Q3`, `SWC2`, `BPI`, 136100],
+      [9, `Q3`, `SWC1`, `BPI`, 21500],
+      [9, `Q3`, `SWC1`, `BPI`, 13000],
+      [9, `Q3`, `SWC1`, `Metrobank`, 39810],
+      [10, `Q4`, `SWC1`, `BPI`, 13000],
+      [10, `Q4`, `SWC1`, `BPI`, 21500],
+      [10, `Q4`, `SWC1`, `Metrobank`, 14000],
+      [10, `Q4`, `SWC2`, `Chinabank`, 10000],
+      [11, `Q4`, `SWC1`, `Chinabank`, 10000],
+      [11, `Q4`, `SWC1`, `BPI`, 12000]
+    ];
+
+    // Anonymized Disbursement Records: [month, quarter, category, amount]
+    const DISBURSEMENTS = [
+      // Jan (M1)
+      [1, `Q1`, `Ministry & Community`, 1000],
+      [1, `Q1`, `Utilities (Power & Water)`, 3000],
+      [1, `Q1`, `Love Gifts & Benevolence`, 2000],
+      [1, `Q1`, `Utilities (Power & Water)`, 7806],
+      [1, `Q1`, `Leadership & Planning`, 4000],
+      // Feb (M2)
+      [2, `Q1`, `Love Gifts & Benevolence`, 1000],
+      [2, `Q1`, `Love Gifts & Benevolence`, 7000],
+      [2, `Q1`, `Leadership & Planning`, 4000],
+      [2, `Q1`, `Admin, Tax & Operations`, 4500],
+      [2, `Q1`, `Ministry & Community`, 2500],
+      [2, `Q1`, `Utilities (Power & Water)`, 3000],
+      [2, `Q1`, `Utilities (Power & Water)`, 6280],
+      [2, `Q1`, `Love Gifts & Benevolence`, 5000],
+      // Mar (M3)
+      [3, `Q1`, `Love Gifts & Benevolence`, 7000],
+      [3, `Q1`, `Love Gifts & Benevolence`, 1000],
+      [3, `Q1`, `Ministry & Community`, 2000],
+      [3, `Q1`, `Ministry & Community`, 2000],
+      [3, `Q1`, `Love Gifts & Benevolence`, 1000],
+      [3, `Q1`, `Ministry & Community`, 1000],
+      [3, `Q1`, `Love Gifts & Benevolence`, 1000],
+      // Apr (M4)
+      [4, `Q2`, `Love Gifts & Benevolence`, 500],
+      [4, `Q2`, `Love Gifts & Benevolence`, 5000],
+      [4, `Q2`, `Utilities (Power & Water)`, 3000],
+      [4, `Q2`, `Utilities (Power & Water)`, 13028],
+      [4, `Q2`, `Love Gifts & Benevolence`, 10000],
+      [4, `Q2`, `Love Gifts & Benevolence`, 6450],
+      [4, `Q2`, `Ministry & Community`, 1000],
+      [4, `Q2`, `Ministry & Community`, 6000],
+      [4, `Q2`, `Leadership & Planning`, 6395],
+      [4, `Q2`, `Ministry & Community`, 3000],
+      // May (M5)
+      [5, `Q2`, `Ministry & Community`, 2500],
+      [5, `Q2`, `Utilities (Power & Water)`, 3000],
+      [5, `Q2`, `Ministry & Community`, 3500],
+      [5, `Q2`, `Ministry & Community`, 1000],
+      [5, `Q2`, `Ministry & Community`, 1000],
+      [5, `Q2`, `Utilities (Power & Water)`, 13477],
+      [5, `Q2`, `Ministry & Community`, 2000],
+      [5, `Q2`, `Love Gifts & Benevolence`, 10000],
+      [5, `Q2`, `Ministry & Community`, 3000],
+      [5, `Q2`, `Ministry & Community`, 1500],
+      [5, `Q2`, `Ministry & Community`, 1869],
+      [5, `Q2`, `Love Gifts & Benevolence`, 3000],
+      [5, `Q2`, `Love Gifts & Benevolence`, 500],
+      [5, `Q2`, `Tech, Comms & Subscriptions`, 2976],
+      [5, `Q2`, `Admin, Tax & Operations`, 1500],
+      [5, `Q2`, `Ministry & Community`, 5000],
+      [5, `Q2`, `Ministry & Community`, 1000],
+      [5, `Q2`, `Ministry & Community`, 1000],
+      [5, `Q2`, `Leadership & Planning`, 9977],
+      // Jun (M6)
+      [6, `Q2`, `Utilities (Power & Water)`, 3000],
+      [6, `Q2`, `Ministry & Community`, 1802],
+      [6, `Q2`, `Love Gifts & Benevolence`, 10000],
+      [6, `Q2`, `Ministry & Community`, 500],
+      [6, `Q2`, `Ministry & Community`, 6000],
+      [6, `Q2`, `Ministry & Community`, 1000],
+      [6, `Q2`, `Love Gifts & Benevolence`, 200],
+      // Jul (M7)
+      [7, `Q3`, `Leadership & Planning`, 10000],
+      [7, `Q3`, `Utilities (Power & Water)`, 3000],
+      [7, `Q3`, `Tech, Comms & Subscriptions`, 10088],
+      [7, `Q3`, `Tech, Comms & Subscriptions`, 659],
+      [7, `Q3`, `Admin, Tax & Operations`, 1200],
+      [7, `Q3`, `Utilities (Power & Water)`, 14981],
+      [7, `Q3`, `Love Gifts & Benevolence`, 1500],
+      [7, `Q3`, `Ministry & Community`, 3000],
+      [7, `Q3`, `Ministry & Community`, 3000],
+      [7, `Q3`, `Admin, Tax & Operations`, 4150],
+      [7, `Q3`, `Love Gifts & Benevolence`, 3000],
+      [7, `Q3`, `Love Gifts & Benevolence`, 500],
+      [7, `Q3`, `Ministry & Community`, 3000],
+      [7, `Q3`, `Love Gifts & Benevolence`, 500],
+      // Aug (M8)
+      [8, `Q3`, `Leadership & Planning`, 9548],
+      [8, `Q3`, `Ministry & Community`, 3000],
+      [8, `Q3`, `Love Gifts & Benevolence`, 500],
+      [8, `Q3`, `Love Gifts & Benevolence`, 250],
+      [8, `Q3`, `Utilities (Power & Water)`, 3000],
+      [8, `Q3`, `Leadership & Planning`, 25000],
+      [8, `Q3`, `Ministry & Community`, 1902.75],
+      [8, `Q3`, `Utilities (Power & Water)`, 11541],
+      [8, `Q3`, `Tech, Comms & Subscriptions`, 7564],
+      [8, `Q3`, `Leadership & Planning`, 806],
+      [8, `Q3`, `Tech, Comms & Subscriptions`, 856],
+      [8, `Q3`, `Love Gifts & Benevolence`, 6000],
+      [8, `Q3`, `Ministry & Community`, 1500],
+      [8, `Q3`, `Ministry & Community`, 3000],
+      [8, `Q3`, `Love Gifts & Benevolence`, 8000],
+      [8, `Q3`, `Admin, Tax & Operations`, 2022],
+      [8, `Q3`, `Ministry & Community`, 3000],
+      [8, `Q3`, `Ministry & Community`, 3000],
+      [8, `Q3`, `Ministry & Community`, 4000],
+      [8, `Q3`, `Ministry & Community`, 1500],
+      [8, `Q3`, `Ministry & Community`, 500],
+      // Sep (M9)
+      [9, `Q3`, `Utilities (Power & Water)`, 3000],
+      [9, `Q3`, `Love Gifts & Benevolence`, 3000],
+      [9, `Q3`, `Love Gifts & Benevolence`, 1500],
+      [9, `Q3`, `Love Gifts & Benevolence`, 8000],
+      [9, `Q3`, `Admin, Tax & Operations`, 4000],
+      [9, `Q3`, `Ministry & Community`, 821],
+      [9, `Q3`, `Ministry & Community`, 3000],
+      [9, `Q3`, `Tech, Comms & Subscriptions`, 7631],
+      // Oct (M10)
+      [10, `Q4`, `Leadership & Planning`, 10000],
+      [10, `Q4`, `Utilities (Power & Water)`, 3000],
+      [10, `Q4`, `Ministry & Community`, 3000],
+      [10, `Q4`, `Leadership & Planning`, 774],
+      [10, `Q4`, `Admin, Tax & Operations`, 2400],
+      [10, `Q4`, `Love Gifts & Benevolence`, 8000],
+      [10, `Q4`, `Love Gifts & Benevolence`, 2000],
+      [10, `Q4`, `Ministry & Community`, 2100],
+      [10, `Q4`, `Tech, Comms & Subscriptions`, 7734],
+      // Nov (M11)
+      [11, `Q4`, `Utilities (Power & Water)`, 3000],
+      [11, `Q4`, `Leadership & Planning`, 9198],
+      [11, `Q4`, `Ministry & Community`, 6700],
+      [11, `Q4`, `Ministry & Community`, 3000],
+      [11, `Q4`, `Love Gifts & Benevolence`, 1000],
+      [11, `Q4`, `Admin, Tax & Operations`, 1500],
+      [11, `Q4`, `Admin, Tax & Operations`, 800],
+      [11, `Q4`, `Love Gifts & Benevolence`, 8000]
+    ];
+
+    const POSTING_STATUS = [
+      { month: 1, name: `January`, short: `Jan`, closed: true },
+      { month: 2, name: `February`, short: `Feb`, closed: true },
+      { month: 3, name: `March`, short: `Mar`, closed: true },
+      { month: 4, name: `April`, short: `Apr`, closed: true },
+      { month: 5, name: `May`, short: `May`, closed: true },
+      { month: 6, name: `June`, short: `Jun`, closed: true },
+      { month: 7, name: `July`, short: `Jul`, closed: true },
+      { month: 8, name: `August`, short: `Aug`, closed: true },
+      { month: 9, name: `September`, short: `Sep`, closed: true },
+      { month: 10, name: `October`, short: `Oct`, closed: true },
+      { month: 11, name: `November`, short: `Nov`, closed: false },
+      { month: 12, name: `December`, short: `Dec`, closed: true }
+    ];
+
+    const COMMUNITY_BASE = [
+      { community: `Unassigned / Digital`, count: 47 },
+      { community: `Kindred Heart`, count: 40 },
+      { community: `Young Professional`, count: 33 },
+      { community: `Young Couple`, count: 22 },
+      { community: `Adult Couple`, count: 16 },
+      { community: `Youth`, count: 14 },
+      { community: `Abroad`, count: 12 },
+      { community: `Remix`, count: 9 },
+      { community: `Pastoral`, count: 6 },
+      { community: `Southridge`, count: 3 }
+    ];
+
+    const DENOM_META = [
+      { label: `₱1,000`, value: 1000, idx: 0 },
+      { label: `₱500`, value: 500, idx: 1 },
+      { label: `₱200`, value: 200, idx: 2 },
+      { label: `₱100`, value: 100, idx: 3 },
+      { label: `₱50`, value: 50, idx: 4 },
+      { label: `₱20`, value: 20, idx: 5 },
+      { label: `₱10`, value: 10, idx: 6 },
+      { label: `₱5`, value: 5, idx: 7 },
+      { label: `₱1`, value: 1, idx: 8 },
+      { label: `₱0.25`, value: 0.25, idx: 9 }
+    ];
+
+    const EXPENSE_CATEGORIES = [
+      `Love Gifts & Benevolence`,
+      `Ministry & Community`,
+      `Utilities (Power & Water)`,
+      `Leadership & Planning`,
+      `Tech, Comms & Subscriptions`,
+      `Admin, Tax & Operations`
+    ];
+
+    // =========================================================================
+    // DASHBOARD STATE & THEME TOKENS
+    // =========================================================================
+    const state = {
+      quarter: `ALL`,
+      month: `ALL`,
+      service: `ALL`,
+      category: null,
+      flowMode: `monthly`,
+      tenderView: `cash`,
+      sortKey: `month`,
+      sortDir: `asc`
+    };
+
+    let cashflowChart = null;
+    let serviceChart = null;
+    let tenderChart = null;
+    let communityChart = null;
+
+    function getToken(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function fmtPeso(val, decimals) {
+      const dec = typeof decimals === `number` ? decimals : (Math.abs(val % 1) > 0.001 ? 2 : 0);
+      return `₱` + Number(val).toLocaleString(`en-US`, {
+        minimumFractionDigits: dec,
+        maximumFractionDigits: dec
+      });
+    }
+
+    function fmtInt(val) {
+      return Math.round(val).toLocaleString(`en-US`);
+    }
+
+    function fmtPct(val) {
+      return val.toFixed(1) + `%`;
+    }
+
+    // =========================================================================
+    // FILTERING & AGGREGATION ENGINE
+    // =========================================================================
+    function monthMatches(m, q) {
+      if (state.month !== `ALL`) {
+        return Number(m) === Number(state.month);
+      }
+      if (state.quarter !== `ALL`) {
+        return q === state.quarter;
+      }
+      return true;
+    }
+
+    function getFilteredCashCounts() {
+      return CASH_COUNTS.filter(function (row) {
+        const mOk = monthMatches(row[1], row[2]);
+        const sOk = state.service === `ALL` || row[3] === state.service;
+        return mOk && sOk;
+      });
+    }
+
+    function getFilteredCheques() {
+      return CHEQUES.filter(function (row) {
+        const mOk = monthMatches(row[0], row[1]);
+        const sOk = state.service === `ALL` || row[2] === state.service;
+        return mOk && sOk;
+      });
+    }
+
+    function getFilteredDisbursements() {
+      return DISBURSEMENTS.filter(function (row) {
+        const mOk = monthMatches(row[0], row[1]);
+        const cOk = !state.category || row[2] === state.category;
+        return mOk && cOk;
+      });
+    }
+
+    function getPeriodDisbursementsAllCategories() {
+      return DISBURSEMENTS.filter(function (row) {
+        return monthMatches(row[0], row[1]);
+      });
+    }
+
+    // =========================================================================
+    // FILTER HANDLERS (HOISTED FUNCTIONS)
+    // =========================================================================
+    function setQuarterFilter(q) {
+      state.quarter = q;
+      state.month = `ALL`;
+      const monthSel = document.getElementById(`month-select`);
+      if (monthSel) monthSel.value = `ALL`;
+      syncQuarterButtons();
+      renderAll();
+    }
+
+    function setMonthFilter(val) {
+      state.month = val;
+      if (val !== `ALL`) {
+        const m = Number(val);
+        if (m <= 3) state.quarter = `Q1`;
+        else if (m <= 6) state.quarter = `Q2`;
+        else if (m <= 9) state.quarter = `Q3`;
+        else state.quarter = `Q4`;
+      }
+      syncQuarterButtons();
+      renderAll();
+    }
+
+    function setServiceFilter(val) {
+      state.service = val;
+      renderAll();
+    }
+
+    function toggleCategoryFilter(cat) {
+      state.category = state.category === cat ? null : cat;
+      renderAll();
+    }
+
+    function resetAllFilters() {
+      state.quarter = `ALL`;
+      state.month = `ALL`;
+      state.service = `ALL`;
+      state.category = null;
+      const monthSel = document.getElementById(`month-select`);
+      if (monthSel) monthSel.value = `ALL`;
+      const svcSel = document.getElementById(`service-select`);
+      if (svcSel) svcSel.value = `ALL`;
+      syncQuarterButtons();
+      renderAll();
+    }
+
+    function setFlowChartMode(mode) {
+      state.flowMode = mode;
+      const mBtn = document.getElementById(`mode-monthly-btn`);
+      const cBtn = document.getElementById(`mode-cumulative-btn`);
+      if (mBtn) mBtn.setAttribute(`aria-selected`, mode === `monthly` ? `true` : `false`);
+      if (cBtn) cBtn.setAttribute(`aria-selected`, mode === `cumulative` ? `true` : `false`);
+      renderCashflowChart();
+    }
+
+    function setTenderView(view) {
+      state.tenderView = view;
+      const cashBtn = document.getElementById(`tender-cash-btn`);
+      const chqBtn = document.getElementById(`tender-cheque-btn`);
+      if (cashBtn) cashBtn.setAttribute(`aria-selected`, view === `cash` ? `true` : `false`);
+      if (chqBtn) chqBtn.setAttribute(`aria-selected`, view === `cheque` ? `true` : `false`);
+      renderTenderPanel();
+    }
+
+    function sortMonthlyTable(key) {
+      if (state.sortKey === key) {
+        state.sortDir = state.sortDir === `asc` ? `desc` : `asc`;
+      } else {
+        state.sortKey = key;
+        state.sortDir = key === `month` ? `asc` : `desc`;
+      }
+      renderMonthlyTable();
+    }
+
+    function syncQuarterButtons() {
+      const btns = document.querySelectorAll(`.seg-btn[data-quarter]`);
+      btns.forEach(function (btn) {
+        const active = state.month === `ALL` && btn.dataset.quarter === state.quarter;
+        btn.setAttribute(`aria-pressed`, active ? `true` : `false`);
+      });
+    }
+
+    // =========================================================================
+    // RENDER FUNCTIONS
+    // =========================================================================
+    function renderFilterMeta() {
+      const resetBtn = document.getElementById(`reset-filters-btn`);
+      const hasFilter = state.quarter !== `ALL` || state.month !== `ALL` || state.service !== `ALL` || state.category !== null;
+      if (resetBtn) resetBtn.disabled = !hasFilter;
+
+      const summaryEl = document.getElementById(`active-filter-summary`);
+      const pillEl = document.getElementById(`category-filter-pill`);
+      const headerScope = document.getElementById(`header-scope-value`);
+
+      let periodLabel = `Jan – Nov 2026 (YTD)`;
+      if (state.month !== `ALL`) {
+        const mInfo = POSTING_STATUS.find(function (p) { return p.month === Number(state.month); });
+        periodLabel = (mInfo ? mInfo.name : `Month ` + state.month) + ` 2026`;
+      } else if (state.quarter !== `ALL`) {
+        const qMap = {
+          Q1: `Q1 2026 (Jan – Mar)`,
+          Q2: `Q2 2026 (Apr – Jun)`,
+          Q3: `Q3 2026 (Jul – Sep)`,
+          Q4: `Q4 2026 (Oct – Nov)`
+        };
+        periodLabel = qMap[state.quarter] || state.quarter;
+      }
+
+      const svcLabel = state.service === `ALL` ? `All Services (SWC1 & SWC2)` : state.service + ` only`;
+      if (summaryEl) {
+        summaryEl.textContent = `Active View: ` + periodLabel + ` · Collections: ` + svcLabel + (state.service !== `ALL` ? ` (Disbursements remain church-wide)` : ``);
+      }
+
+      if (headerScope) {
+        const ccFiltered = getFilteredCashCounts();
+        const uniqueDates = new Set(ccFiltered.map(function (r) { return r[0]; }));
+        headerScope.textContent = periodLabel + ` (` + uniqueDates.size + ` Sundays)`;
+      }
+
+      if (pillEl) {
+        if (state.category) {
+          pillEl.hidden = false;
+          pillEl.textContent = `Expense Focus: ` + state.category;
+          pillEl.className = `stamp-tag is-green`;
+        } else {
+          pillEl.hidden = true;
+        }
+      }
+    }
+
+    function renderKPIs() {
+      const cc = getFilteredCashCounts();
+      const disb = getFilteredDisbursements();
+
+      let totalCash = 0;
+      let totalCheque = 0;
+      let totalColl = 0;
+      let totalEnv = 0;
+      const sundayDates = new Set();
+
+      cc.forEach(function (r) {
+        totalCash += r[5];
+        totalCheque += r[6];
+        totalColl += r[7];
+        totalEnv += r[8];
+        sundayDates.add(r[0]);
+      });
+
+      let totalDisb = 0;
+      disb.forEach(function (r) {
+        totalDisb += r[3];
+      });
+
+      const net = totalColl - totalDisb;
+      const cashPct = totalColl > 0 ? (totalCash / totalColl) * 100 : 0;
+      const chqPct = totalColl > 0 ? (totalCheque / totalColl) * 100 : 0;
+      const disbRatio = totalColl > 0 ? (totalDisb / totalColl) * 100 : 0;
+      const netMargin = totalColl > 0 ? (net / totalColl) * 100 : 0;
+      const sundayCount = sundayDates.size;
+      const avgSunday = sundayCount > 0 ? totalColl / sundayCount : 0;
+      const avgEnv = totalEnv > 0 ? totalColl / totalEnv : 0;
+
+      const elColl = document.getElementById(`kpi-collections`);
+      const elCollMix = document.getElementById(`kpi-collections-mix`);
+      const elCollSub = document.getElementById(`kpi-collections-sub`);
+      if (elColl) elColl.textContent = fmtPeso(totalColl);
+      if (elCollMix) elCollMix.textContent = `Cash ` + fmtPct(cashPct) + ` · Cheques ` + fmtPct(chqPct);
+      if (elCollSub) elCollSub.textContent = fmtPeso(totalCash) + ` cash + ` + fmtPeso(totalCheque) + ` cheques (` + sundayCount + ` Sundays)`;
+
+      const elDisb = document.getElementById(`kpi-disbursements`);
+      const elDisbRatio = document.getElementById(`kpi-disbursements-ratio`);
+      const elDisbSub = document.getElementById(`kpi-disbursements-sub`);
+      if (elDisb) elDisb.textContent = fmtPeso(totalDisb);
+      if (elDisbRatio) elDisbRatio.textContent = fmtPct(disbRatio) + ` of filtered collections`;
+      if (elDisbSub) elDisbSub.textContent = disb.length + ` approved items` + (state.category ? ` in ` + state.category : ` across 6 categories`);
+
+      const elNet = document.getElementById(`kpi-net`);
+      const elNetMargin = document.getElementById(`kpi-net-margin`);
+      const elNetSub = document.getElementById(`kpi-net-sub`);
+      if (elNet) elNet.textContent = (net < 0 ? `-` : ``) + fmtPeso(Math.abs(net));
+      if (elNetMargin) {
+        elNetMargin.textContent = (net >= 0 ? `+` : ``) + fmtPct(netMargin) + ` net retention`;
+        elNetMargin.className = `figure-delta ` + (net >= 0 ? `positive` : `negative`);
+      }
+      if (elNetSub) {
+        elNetSub.textContent = state.service !== `ALL` ? `Partial service inflow vs. church-wide outflow` : `Surplus retained for ministry & reserves`;
+      }
+
+      const elEnv = document.getElementById(`kpi-envelopes`);
+      const elAvgSun = document.getElementById(`kpi-avg-sunday`);
+      const elAvgEnv = document.getElementById(`kpi-avg-envelope`);
+      if (elEnv) elEnv.textContent = fmtInt(totalEnv);
+      if (elAvgSun) elAvgSun.textContent = fmtPeso(avgSunday, 0) + ` avg / Sunday`;
+      if (elAvgEnv) elAvgEnv.textContent = fmtPeso(avgEnv, 0) + ` avg / envelope`;
+    }
+
+    function renderCashflowChart() {
+      const canvas = document.getElementById(`cashflow-chart`);
+      if (!canvas || typeof Chart === `undefined`) return;
+
+      const months = POSTING_STATUS.filter(function (p) { return p.month <= 11; });
+      const labels = months.map(function (p) { return p.short; });
+
+      const collByMonth = new Array(11).fill(0);
+      const disbByMonth = new Array(11).fill(0);
+
+      CASH_COUNTS.forEach(function (r) {
+        if (state.service === `ALL` || r[3] === state.service) {
+          collByMonth[r[1] - 1] += r[7];
+        }
+      });
+
+      DISBURSEMENTS.forEach(function (r) {
+        if (!state.category || r[2] === state.category) {
+          disbByMonth[r[0] - 1] += r[3];
+        }
+      });
+
+      const netSeries = [];
+      let runningColl = 0;
+      let runningDisb = 0;
+      const cumColl = [];
+      const cumDisb = [];
+
+      for (let i = 0; i < 11; i++) {
+        runningColl += collByMonth[i];
+        runningDisb += disbByMonth[i];
+        cumColl.push(runningColl);
+        cumDisb.push(runningDisb);
+        netSeries.push(state.flowMode === `cumulative` ? (runningColl - runningDisb) : (collByMonth[i] - disbByMonth[i]));
+      }
+
+      const data1 = getToken(`--data-1`);
+      const data2 = getToken(`--data-2`);
+      const data3 = getToken(`--data-3`);
+      const dataCtx = getToken(`--data-context`);
+      const outlineVar = getToken(`--outline-variant`);
+      const inkVariant = getToken(`--on-surface-variant`);
+
+      const barColorsColl = months.map(function (p) {
+        return monthMatches(p.month, p.month <= 3 ? `Q1` : (p.month <= 6 ? `Q2` : (p.month <= 9 ? `Q3` : `Q4`))) ? data1 : dataCtx;
+      });
+      const barColorsDisb = months.map(function (p) {
+        return monthMatches(p.month, p.month <= 3 ? `Q1` : (p.month <= 6 ? `Q2` : (p.month <= 9 ? `Q3` : `Q4`))) ? data2 : dataCtx;
+      });
+
+      if (cashflowChart) cashflowChart.destroy();
+
+      cashflowChart = new Chart(canvas.getContext(`2d`), {
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: `bar`,
+              label: `Collections`,
+              data: state.flowMode === `cumulative` ? cumColl : collByMonth,
+              backgroundColor: barColorsColl,
+              borderRadius: 2,
+              barPercentage: 0.72,
+              categoryPercentage: 0.72,
+              order: 2
+            },
+            {
+              type: `bar`,
+              label: state.category ? state.category : `Disbursements`,
+              data: state.flowMode === `cumulative` ? cumDisb : disbByMonth,
+              backgroundColor: barColorsDisb,
+              borderRadius: 2,
+              barPercentage: 0.72,
+              categoryPercentage: 0.72,
+              order: 3
+            },
+            {
+              type: `line`,
+              label: state.flowMode === `cumulative` ? `Cumulative Net Balance` : `Monthly Net`,
+              data: netSeries,
+              borderColor: data3,
+              backgroundColor: data3,
+              borderWidth: 2,
+              pointRadius: 3.5,
+              pointHoverRadius: 5,
+              tension: 0.15,
+              order: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: function (evt, elements) {
+            if (!elements || elements.length === 0) return;
+            const idx = elements[0].index;
+            const clickedMonth = String(idx + 1);
+            const monthSel = document.getElementById(`month-select`);
+            if (state.month === clickedMonth) {
+              state.month = `ALL`;
+              if (monthSel) monthSel.value = `ALL`;
+            } else {
+              state.month = clickedMonth;
+              if (monthSel) monthSel.value = clickedMonth;
+            }
+            syncQuarterButtons();
+            renderAll();
+          },
+          plugins: {
+            legend: {
+              position: `top`,
+              align: `start`,
+              labels: {
+                boxWidth: 12,
+                boxHeight: 12,
+                color: inkVariant,
+                font: { family: `Inter`, size: 12, weight: `600` }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  return ctx.dataset.label + `: ` + fmtPeso(ctx.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: inkVariant, font: { family: `Inter`, size: 12 } }
+            },
+            y: {
+              grid: { color: outlineVar, lineWidth: 1 },
+              border: { display: false },
+              ticks: {
+                color: inkVariant,
+                font: { family: `Inter`, size: 11 },
+                callback: function (v) {
+                  if (v === 0) return `₱0`;
+                  return `₱` + (v / 1000).toFixed(0) + `k`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderCategoryAllocations() {
+      const container = document.getElementById(`category-allocation-list`);
+      if (!container) return;
+
+      const disb = getPeriodDisbursementsAllCategories();
+      const sums = {};
+      const counts = {};
+      let grand = 0;
+
+      EXPENSE_CATEGORIES.forEach(function (c) {
+        sums[c] = 0;
+        counts[c] = 0;
+      });
+
+      disb.forEach(function (r) {
+        sums[r[2]] = (sums[r[2]] || 0) + r[3];
+        counts[r[2]] = (counts[r[2]] || 0) + 1;
+        grand += r[3];
+      });
+
+      const sorted = EXPENSE_CATEGORIES.slice().sort(function (a, b) {
+        return sums[b] - sums[a];
+      });
+
+      const maxVal = sorted.length > 0 ? Math.max(sums[sorted[0]], 1) : 1;
+
+      container.innerHTML = sorted.map(function (cat) {
+        const val = sums[cat];
+        const share = grand > 0 ? (val / grand) * 100 : 0;
+        const barW = (val / maxVal) * 100;
+        const isSelected = state.category === cat;
+        return `
+          <button type="button" class="alloc-row" aria-pressed="${isSelected ? `true` : `false`}" onclick="toggleCategoryFilter(\`${cat}\`)">
+            <span class="alloc-name">${cat}</span>
+            <span class="alloc-amount">${fmtPeso(val)}</span>
+            <span class="alloc-bar-wrap">
+              <span class="alloc-bar-track"><span class="alloc-bar-fill" style="width: ${barW.toFixed(1)}%;"></span></span>
+              <span class="alloc-meta">${counts[cat]} items &middot; ${fmtPct(share)}</span>
+            </span>
+          </button>
+        `;
+      }).join(``);
+    }
+
+    function renderServicePanel() {
+      const periodCounts = CASH_COUNTS.filter(function (r) {
+        return monthMatches(r[1], r[2]);
+      });
+
+      let s1Cash = 0, s1Chq = 0, s1Tot = 0, s1Env = 0;
+      let s2Cash = 0, s2Chq = 0, s2Tot = 0, s2Env = 0;
+
+      periodCounts.forEach(function (r) {
+        if (r[3] === `SWC1`) {
+          s1Cash += r[5];
+          s1Chq += r[6];
+          s1Tot += r[7];
+          s1Env += r[8];
+        } else {
+          s2Cash += r[5];
+          s2Chq += r[6];
+          s2Tot += r[7];
+          s2Env += r[8];
+        }
+      });
+
+      const bothTot = s1Tot + s2Tot;
+      const s1Share = bothTot > 0 ? (s1Tot / bothTot) * 100 : 0;
+      const s2Share = bothTot > 0 ? (s2Tot / bothTot) * 100 : 0;
+
+      const el1 = document.getElementById(`swc1-total`);
+      const el1m = document.getElementById(`swc1-meta`);
+      const el2 = document.getElementById(`swc2-total`);
+      const el2m = document.getElementById(`swc2-meta`);
+
+      if (el1) el1.textContent = fmtPeso(s1Tot);
+      if (el1m) el1m.textContent = fmtInt(s1Env) + ` envelopes · ` + fmtPct(s1Share) + ` share`;
+      if (el2) el2.textContent = fmtPeso(s2Tot);
+      if (el2m) el2m.textContent = fmtInt(s2Env) + ` envelopes · ` + fmtPct(s2Share) + ` share`;
+
+      const canvas = document.getElementById(`service-chart`);
+      if (!canvas || typeof Chart === `undefined`) return;
+
+      const data1 = getToken(`--data-1`);
+      const data2 = getToken(`--data-2`);
+      const outlineVar = getToken(`--outline-variant`);
+      const inkVariant = getToken(`--on-surface-variant`);
+
+      if (serviceChart) serviceChart.destroy();
+
+      serviceChart = new Chart(canvas.getContext(`2d`), {
+        type: `bar`,
+        data: {
+          labels: [`SWC1 (First Service)`, `SWC2 (Second Service)`],
+          datasets: [
+            {
+              label: `Cash Subtotal`,
+              data: [s1Cash, s2Cash],
+              backgroundColor: data1,
+              borderRadius: 2
+            },
+            {
+              label: `Cheque Subtotal`,
+              data: [s1Chq, s2Chq],
+              backgroundColor: data2,
+              borderRadius: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: `top`,
+              align: `start`,
+              labels: {
+                boxWidth: 12,
+                boxHeight: 12,
+                color: inkVariant,
+                font: { family: `Inter`, size: 12, weight: `600` }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  return ctx.dataset.label + `: ` + fmtPeso(ctx.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false },
+              ticks: { color: inkVariant, font: { family: `Inter`, size: 12 } }
+            },
+            y: {
+              stacked: true,
+              grid: { color: outlineVar },
+              border: { display: false },
+              ticks: {
+                color: inkVariant,
+                font: { family: `Inter`, size: 11 },
+                callback: function (v) { return `₱` + (v / 1000).toFixed(0) + `k`; }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTenderPanel() {
+      const titleEl = document.getElementById(`tender-panel-title`);
+      const noteEl = document.getElementById(`tender-panel-note`);
+      const wrapEl = document.getElementById(`tender-summary-table-wrap`);
+      const canvas = document.getElementById(`tender-chart`);
+      if (!canvas || !wrapEl || typeof Chart === `undefined`) return;
+
+      const data1 = getToken(`--data-1`);
+      const data2 = getToken(`--data-2`);
+      const outlineVar = getToken(`--outline-variant`);
+      const inkVariant = getToken(`--on-surface-variant`);
+
+      if (tenderChart) tenderChart.destroy();
+
+      if (state.tenderView === `cash`) {
+        if (titleEl) titleEl.textContent = `Cash Denomination Breakdown`;
+        if (noteEl) noteEl.textContent = `Physical bills and coins counted across filtered Sunday worship services.`;
+
+        const cc = getFilteredCashCounts();
+        const totals = new Array(10).fill(0);
+        cc.forEach(function (r) {
+          for (let i = 0; i < 10; i++) {
+            totals[i] += r[4][i];
+          }
+        });
+
+        const rows = DENOM_META.map(function (d) {
+          return {
+            label: d.label,
+            count: totals[d.idx],
+            amount: totals[d.idx] * d.value
+          };
+        });
+        const totalCash = rows.reduce(function (acc, r) { return acc + r.amount; }, 0);
+
+        tenderChart = new Chart(canvas.getContext(`2d`), {
+          type: `bar`,
+          data: {
+            labels: rows.map(function (r) { return r.label; }),
+            datasets: [{
+              label: `Peso Value`,
+              data: rows.map(function (r) { return r.amount; }),
+              backgroundColor: data1,
+              borderRadius: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    const row = rows[ctx.dataIndex];
+                    return fmtPeso(row.amount) + ` (` + fmtInt(row.count) + ` pcs)`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: inkVariant, font: { family: `Inter`, size: 11 } }
+              },
+              y: {
+                grid: { color: outlineVar },
+                border: { display: false },
+                ticks: {
+                  color: inkVariant,
+                  font: { family: `Inter`, size: 11 },
+                  callback: function (v) { return `₱` + (v / 1000).toFixed(0) + `k`; }
+                }
+              }
+            }
+          }
+        });
+
+        const topRows = rows.slice(0, 6);
+        const coinTotal = rows.slice(6).reduce(function (a, r) { return a + r.amount; }, 0);
+        const coinCount = rows.slice(6).reduce(function (a, r) { return a + r.count; }, 0);
+
+        wrapEl.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Denomination</th>
+                <th class="num">Pieces</th>
+                <th class="num">Total Value</th>
+                <th class="num">Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${topRows.map(function (r) {
+                const pct = totalCash > 0 ? (r.amount / totalCash) * 100 : 0;
+                return `<tr><td>${r.label} Note</td><td class="num">${fmtInt(r.count)}</td><td class="num">${fmtPeso(r.amount)}</td><td class="num">${fmtPct(pct)}</td></tr>`;
+              }).join(``)}
+              <tr>
+                <td>Coins (₱10 – ₱0.25)</td>
+                <td class="num">${fmtInt(coinCount)}</td>
+                <td class="num">${fmtPeso(coinTotal)}</td>
+                <td class="num">${fmtPct(totalCash > 0 ? (coinTotal / totalCash) * 100 : 0)}</td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+      } else {
+        if (titleEl) titleEl.textContent = `Cheque Deposits by Issuing Bank`;
+        if (noteEl) noteEl.textContent = `Cleared cheque offerings grouped by issuing bank for the selected period.`;
+
+        const chqs = getFilteredCheques();
+        const bankMap = {};
+        const bankCount = {};
+        let totalChq = 0;
+
+        chqs.forEach(function (r) {
+          bankMap[r[3]] = (bankMap[r[3]] || 0) + r[4];
+          bankCount[r[3]] = (bankCount[r[3]] || 0) + 1;
+          totalChq += r[4];
+        });
+
+        const banks = Object.keys(bankMap).sort(function (a, b) {
+          return bankMap[b] - bankMap[a];
+        });
+
+        tenderChart = new Chart(canvas.getContext(`2d`), {
+          type: `bar`,
+          data: {
+            labels: banks.length > 0 ? banks : [`No Cheques in Period`],
+            datasets: [{
+              label: `Cheque Total`,
+              data: banks.length > 0 ? banks.map(function (b) { return bankMap[b]; }) : [0],
+              backgroundColor: data2,
+              borderRadius: 2
+            }]
+          },
+          options: {
+            indexAxis: `y`,
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    const b = banks[ctx.dataIndex];
+                    if (!b) return `₱0`;
+                    return fmtPeso(bankMap[b]) + ` (` + bankCount[b] + ` cheques)`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: outlineVar },
+                border: { display: false },
+                ticks: {
+                  color: inkVariant,
+                  font: { family: `Inter`, size: 11 },
+                  callback: function (v) { return `₱` + (v / 1000).toFixed(0) + `k`; }
+                }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: inkVariant, font: { family: `Inter`, size: 12 } }
+              }
+            }
+          }
+        });
+
+        wrapEl.innerHTML = banks.length === 0
+          ? `<p class="section-note">No cheque deposits recorded for the selected filters.</p>`
+          : `
+            <table>
+              <thead>
+                <tr>
+                  <th>Issuing Bank</th>
+                  <th class="num">Cheques</th>
+                  <th class="num">Total Amount</th>
+                  <th class="num">Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${banks.map(function (b) {
+                  const pct = totalChq > 0 ? (bankMap[b] / totalChq) * 100 : 0;
+                  return `<tr><td>${b}</td><td class="num">${bankCount[b]}</td><td class="num">${fmtPeso(bankMap[b])}</td><td class="num">${fmtPct(pct)}</td></tr>`;
+                }).join(``)}
+              </tbody>
+            </table>
+          `;
+      }
+    }
+
+    function renderCommunityChart() {
+      const canvas = document.getElementById(`community-chart`);
+      if (!canvas || typeof Chart === `undefined` || communityChart) return;
+
+      const data1 = getToken(`--data-1`);
+      const dataCtx = getToken(`--data-context`);
+      const outlineVar = getToken(`--outline-variant`);
+      const inkVariant = getToken(`--on-surface-variant`);
+
+      const colors = COMMUNITY_BASE.map(function (c) {
+        return c.community === `Unassigned / Digital` ? dataCtx : data1;
+      });
+
+      communityChart = new Chart(canvas.getContext(`2d`), {
+        type: `bar`,
+        data: {
+          labels: COMMUNITY_BASE.map(function (c) { return c.community; }),
+          datasets: [{
+            label: `Active Giver Profiles`,
+            data: COMMUNITY_BASE.map(function (c) { return c.count; }),
+            backgroundColor: colors,
+            borderRadius: 2
+          }]
+        },
+        options: {
+          indexAxis: `y`,
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  const total = 202;
+                  const val = ctx.parsed.x;
+                  return val + ` active profiles (` + ((val / total) * 100).toFixed(1) + `%)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: outlineVar },
+              border: { display: false },
+              ticks: { color: inkVariant, font: { family: `Inter`, size: 11 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: inkVariant, font: { family: `Inter`, size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderMonthlyTable() {
+      const tbody = document.getElementById(`monthly-table-body`);
+      const tfoot = document.getElementById(`monthly-table-foot`);
+      if (!tbody || !tfoot) return;
+
+      const rows = POSTING_STATUS.map(function (p) {
+        let env = 0, cash = 0, cheque = 0, collections = 0, disbursements = 0;
+
+        CASH_COUNTS.forEach(function (r) {
+          if (r[1] === p.month && (state.service === `ALL` || r[3] === state.service)) {
+            env += r[8];
+            cash += r[5];
+            cheque += r[6];
+            collections += r[7];
+          }
+        });
+
+        DISBURSEMENTS.forEach(function (r) {
+          if (r[0] === p.month && (!state.category || r[2] === state.category)) {
+            disbursements += r[3];
+          }
+        });
+
+        const quarter = p.month <= 3 ? `Q1` : (p.month <= 6 ? `Q2` : (p.month <= 9 ? `Q3` : `Q4`));
+        return {
+          month: p.month,
+          name: p.name,
+          quarter: quarter,
+          envelopes: env,
+          cash: cash,
+          cheque: cheque,
+          collections: collections,
+          disbursements: disbursements,
+          net: collections - disbursements,
+          closed: p.closed
+        };
+      });
+
+      const visibleRows = rows.filter(function (r) {
+        if (state.month !== `ALL`) return r.month === Number(state.month);
+        if (state.quarter !== `ALL`) return r.quarter === state.quarter;
+        return true;
+      });
+
+      const key = state.sortKey;
+      const dir = state.sortDir === `asc` ? 1 : -1;
+      visibleRows.sort(function (a, b) {
+        return (a[key] - b[key]) * dir;
+      });
+
+      let totEnv = 0, totCash = 0, totChq = 0, totColl = 0, totDisb = 0;
+
+      tbody.innerHTML = visibleRows.map(function (r) {
+        totEnv += r.envelopes;
+        totCash += r.cash;
+        totChq += r.cheque;
+        totColl += r.collections;
+        totDisb += r.disbursements;
+        const statusHtml = r.closed
+          ? `<span class="status-badge status-closed">Closed</span>`
+          : `<span class="status-badge status-open">Open</span>`;
+        const isSel = state.month !== `ALL` && Number(state.month) === r.month;
+        return `
+          <tr class="${isSel ? `is-selected` : ``}">
+            <td>${r.name}</td>
+            <td class="num">${fmtInt(r.envelopes)}</td>
+            <td class="num">${fmtPeso(r.cash)}</td>
+            <td class="num">${fmtPeso(r.cheque)}</td>
+            <td class="num">${fmtPeso(r.collections)}</td>
+            <td class="num">${fmtPeso(r.disbursements)}</td>
+            <td class="num">${(r.net < 0 ? `-` : ``) + fmtPeso(Math.abs(r.net))}</td>
+            <td>${statusHtml}</td>
+          </tr>
+        `;
+      }).join(``);
+
+      const totNet = totColl - totDisb;
+      tfoot.innerHTML = `
+        <tr>
+          <td>Total (${visibleRows.length} mo.)</td>
+          <td class="num">${fmtInt(totEnv)}</td>
+          <td class="num">${fmtPeso(totCash)}</td>
+          <td class="num">${fmtPeso(totChq)}</td>
+          <td class="num">${fmtPeso(totColl)}</td>
+          <td class="num">${fmtPeso(totDisb)}</td>
+          <td class="num">${(totNet < 0 ? `-` : ``) + fmtPeso(Math.abs(totNet))}</td>
+          <td></td>
+        </tr>
+      `;
+    }
+
+    function renderAll() {
+      renderFilterMeta();
+      renderKPIs();
+      renderCashflowChart();
+      renderCategoryAllocations();
+      renderServicePanel();
+      renderTenderPanel();
+      renderCommunityChart();
+      renderMonthlyTable();
+    }
+
+    document.addEventListener(`DOMContentLoaded`, function () {
+      renderAll();
+    });
+  </script>
+</body>
+</html>
