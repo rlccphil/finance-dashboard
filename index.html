@@ -794,15 +794,35 @@
       }
     }
     .brand-logo { display: block; width: min(300px, 70%); height: auto; margin-bottom: var(--space-lg); }
+    /* ---- Access gate ---- */
+    body.is-locked main.page-grid { display: none; }
+    body:not(.is-locked) #access-gate { display: none; }
+    .access-gate { max-width: 34rem; margin: var(--space-xl) auto; padding: 0 var(--space-md); }
+    .gate-card { background: var(--surface-container-low); border: var(--hairline); border-top: var(--brass-rule); padding: var(--space-xl) var(--space-lg); }
+    .gate-card h2 { font-family: var(--font-headline); font-size: var(--headline-size); margin: 0 0 var(--space-sm); color: var(--primary); }
+    .gate-card p { margin: 0 0 var(--space-md); color: var(--on-surface-variant); font-size: var(--body-size); line-height: 1.55; }
+    .gate-card label { display: block; font-size: var(--label-size); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--on-surface-variant); margin-bottom: var(--space-xs); }
+    .gate-card input { width: 100%; box-sizing: border-box; font: inherit; font-size: 1rem; padding: .7rem .8rem; margin-bottom: var(--space-md); border: 1px solid var(--outline-variant); background: #fff; color: var(--on-surface); border-radius: var(--rounded); }
+    .gate-card input:focus-visible, .gate-card button:focus-visible, .link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .gate-card input.code-input { font-size: 1.5rem; letter-spacing: .4em; text-align: center; }
+    .gate-primary { width: 100%; font: inherit; font-weight: 600; padding: .8rem 1rem; border: 0; background: var(--primary); color: var(--on-primary); border-radius: var(--rounded); cursor: pointer; }
+    .gate-primary:hover { background: var(--primary-hover); }
+    .gate-primary[disabled] { opacity: .6; cursor: wait; }
+    .gate-note { font-size: var(--label-size) !important; }
+    .gate-msg { min-height: 1.4em; font-size: var(--body-size); margin: var(--space-md) 0 0 !important; }
+    .gate-msg.is-error { color: var(--error) !important; }
+    .gate-msg.is-ok { color: var(--positive) !important; }
+    .link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--primary); text-decoration: underline; cursor: pointer; }
+    .gate-switch { margin: var(--space-md) 0 0 !important; text-align: center; }
     .data-status { font-size: var(--label-size); color: var(--on-surface-variant); margin-top: var(--space-sm); }
   </style>
 </head>
-<body>
+<body class="is-locked">
   <header class="title-band">
     <div class="title-band-inner">
       <div>
         <img class="brand-logo" src="data:image/png;base64,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" alt="Real Life Christian Communities" width="520" height="57">
-        <p class="title-kicker" id="title-kicker">Fiscal Year 2026 Public Stewardship Report &middot; January 1 – November 22, 2026</p>
+        <p class="title-kicker" id="title-kicker">Fiscal Year 2026 Public Stewardship Report</p>
         <h1>RLCC Financial Stewardship Dashboard</h1>
         <p class="lede">
           Public summary of Sunday worship collections, cheque deposits, categorized ministry disbursements, and monthly fiscal closing status. All individual giver, staff, and steward identities have been omitted.
@@ -810,10 +830,41 @@
       </div>
       <div class="report-stamp">
         <span class="report-stamp-label">Reporting Scope</span>
-        <span class="report-stamp-value" id="header-scope-value">Jan – Nov 2026 (46 Sundays)</span>
+        <span class="report-stamp-value" id="header-scope-value">Sign in to view</span>
       </div>
     </div>
   </header>
+
+  <section id="access-gate" class="access-gate" aria-labelledby="gate-title">
+    <div class="gate-card">
+      <div id="gate-request">
+        <h2 id="gate-title">Welcome — please request access</h2>
+        <p>This report is shared with our church family. Tell us who you are, and the church office will send you a one-time passcode.</p>
+        <form id="request-form" novalidate>
+          <label for="req-name">Full name</label>
+          <input id="req-name" type="text" autocomplete="name" maxlength="80" required>
+          <label for="req-email">Email address</label>
+          <input id="req-email" type="email" autocomplete="email" maxlength="120" required>
+          <button type="submit" class="gate-primary" id="req-btn">Request a passcode</button>
+        </form>
+        <p class="gate-note" style="margin-top:var(--space-md)">We record your name, email, and visit times only to manage access to this report.</p>
+        <p class="gate-switch"><button type="button" class="link-btn" id="to-verify">I already have a passcode</button></p>
+      </div>
+      <div id="gate-verify" hidden>
+        <h2>Enter your passcode</h2>
+        <p>Type the email you used to sign up and the 6-digit passcode you received. You will stay signed in on this device.</p>
+        <form id="verify-form" novalidate>
+          <label for="ver-email">Email address</label>
+          <input id="ver-email" type="email" autocomplete="email" maxlength="120" required>
+          <label for="ver-code">One-time passcode</label>
+          <input id="ver-code" class="code-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" required>
+          <button type="submit" class="gate-primary" id="ver-btn">View the report</button>
+        </form>
+        <p class="gate-switch"><button type="button" class="link-btn" id="to-request">I need to request access</button></p>
+      </div>
+      <p id="gate-msg" class="gate-msg" role="status" aria-live="polite"></p>
+    </div>
+  </section>
 
   <main class="page-grid">
     <!-- Filter Controls -->
@@ -1022,311 +1073,34 @@
 
     <footer class="report-footer">
       <p id="footer-grounding">
-        <strong>Data Grounding &amp; Privacy Notice:</strong> Derived from RLCC FY 2026 Cash Count Records (91 service counts across 46 Sundays, Jan 4 – Nov 22, 2026), Cheque Register (33 deposits), Categorized Disbursement Records (116 entries), Posting Status Schedule (Months 1–12), and Community Directory Aggregates. All personal names, account numbers, and individual transaction ledgers are omitted for public reporting.
+        <strong>Data Grounding &amp; Privacy Notice:</strong> All personal names, account numbers, and individual transaction ledgers are omitted from this report.
       </p>
       <p id="footer-coverage">
-        <strong>Note on Coverage:</strong> November 2026 remains open for posting as of November 23, 2026. December 2026 reflects zero recorded collections to date.
+        <strong>Note on Coverage:</strong> Loading…
       </p>
       <p id="data-status" class="data-status" aria-live="polite"></p>
+      <p class="data-status"><button type="button" class="link-btn" id="signout-btn">Sign out on this device</button></p>
     </footer>
   </main>
 
   <script>
     // =========================================================================
-    // GROUNDED ANONYMIZED SOURCE DATA (RLCC FY 2026: Jan 1 - Nov 22, 2026)
-    // Zero individual people's names anywhere in data or labels.
+    // REPORT DATA — loaded only after an approved viewer signs in.
+    // No figures are stored in this page.
     // =========================================================================
 
     // [date, month, quarter, swc, [1000,500,200,100,50,20,10,5,1,0.25], cash, cheque, total, envelopes]
-    let CASH_COUNTS = [
-      [`1/4/2026`, 1, `Q1`, `SWC1`, [11,2,0,17,15,1,1,0,1,0], 14481, 0, 14481, 22],
-      [`1/4/2026`, 1, `Q1`, `SWC2`, [10,7,0,29,11,4,2,6,0,0], 17080, 0, 17080, 34],
-      [`1/11/2026`, 1, `Q1`, `SWC1`, [53,1,0,10,9,5,1,19,1,0], 55156, 122016, 177172, 25],
-      [`1/11/2026`, 1, `Q1`, `SWC2`, [31,8,0,23,24,3,0,8,27,1], 38627.25, 8000, 46627.25, 34],
-      [`1/18/2026`, 1, `Q1`, `SWC1`, [1,2,0,23,7,7,4,4,6,0], 4856, 0, 4856, 29],
-      [`1/18/2026`, 1, `Q1`, `SWC2`, [7,7,0,16,5,3,0,0,0,0], 12410, 34710, 47120, 23],
-      [`2/1/2026`, 2, `Q1`, `SWC1`, [0,0,1,17,9,1,1,6,0,0], 2410, 21500, 23910, 21],
-      [`2/1/2026`, 2, `Q1`, `SWC2`, [31,8,2,46,10,3,0,3,5,0], 40580, 0, 40580, 30],
-      [`2/8/2026`, 2, `Q1`, `SWC1`, [1,4,0,14,6,1,1,2,0,0], 4740, 15000, 19740, 18],
-      [`2/8/2026`, 2, `Q1`, `SWC2`, [18,8,0,26,4,0,0,1,2,0], 24807, 49460, 74267, 33],
-      [`2/15/2026`, 2, `Q1`, `SWC1`, [2,2,0,5,5,2,0,0,0,0], 3790, 0, 3790, 10],
-      [`2/15/2026`, 2, `Q1`, `SWC2`, [14,6,2,27,5,1,2,0,2,0], 20392, 0, 20392, 29],
-      [`2/22/2026`, 2, `Q1`, `SWC1`, [0,3,0,20,5,3,0,1,0,0], 3815, 0, 3815, 17],
-      [`2/22/2026`, 2, `Q1`, `SWC2`, [28,6,0,12,4,0,0,0,0,0], 32400, 0, 32400, 24],
-      [`3/1/2026`, 3, `Q1`, `SWC1`, [0,2,0,13,2,2,2,8,2,0], 2502, 21500, 24002, 12],
-      [`3/1/2026`, 3, `Q1`, `SWC2`, [24,12,0,39,17,7,2,5,13,0], 34948, 0, 34948, 45],
-      [`3/8/2026`, 3, `Q1`, `SWC1`, [15,0,1,11,3,1,0,7,12,0], 16517, 0, 16517, 15],
-      [`3/8/2026`, 3, `Q1`, `SWC2`, [7,4,0,30,10,0,1,0,0,0], 12510, 8000, 20510, 22],
-      [`3/15/2026`, 3, `Q1`, `SWC1`, [16,2,1,17,6,1,1,4,5,1], 19255.25, 0, 19255.25, 25],
-      [`3/15/2026`, 3, `Q1`, `SWC2`, [27,7,0,26,10,0,0,1,0,0], 33605, 0, 33605, 27],
-      [`3/22/2026`, 3, `Q1`, `SWC1`, [0,0,0,0,0,0,0,0,0,0], 0, 0, 0, 23],
-      [`3/29/2026`, 3, `Q1`, `SWC1`, [3,3,0,12,10,1,3,3,1,0], 6266, 21500, 27766, 22],
-      [`3/29/2026`, 3, `Q1`, `SWC2`, [10,2,0,23,5,2,0,0,0,0], 13590, 64180, 77770, 25],
-      [`4/5/2026`, 4, `Q2`, `SWC1`, [0,1,0,14,8,3,5,11,26,0], 2491, 0, 2491, 24],
-      [`4/5/2026`, 4, `Q2`, `SWC2`, [26,9,0,42,14,6,1,5,0,0], 35555, 0, 35555, 46],
-      [`4/12/2026`, 4, `Q2`, `SWC1`, [15,0,1,15,4,1,1,7,5,0], 16970, 0, 16970, 12],
-      [`4/12/2026`, 4, `Q2`, `SWC2`, [15,4,0,8,7,0,3,0,0,0], 18180, 87178.5, 105358.5, 25],
-      [`4/19/2026`, 4, `Q2`, `SWC1`, [4,2,0,7,4,0,0,0,0,0], 5900, 0, 5900, 11],
-      [`4/19/2026`, 4, `Q2`, `SWC2`, [34,10,0,30,12,2,4,5,7,0], 42712, 0, 42712, 44],
-      [`4/26/2026`, 4, `Q2`, `SWC1`, [0,0,0,10,7,0,0,0,0,0], 1350, 0, 1350, 7],
-      [`4/26/2026`, 4, `Q2`, `SWC2`, [19,3,0,26,10,4,1,6,8,0], 23728, 39000, 62728, 24],
-      [`5/3/2026`, 5, `Q2`, `SWC1`, [1,35,0,27,11,1,0,0,0,0], 21770, 34500, 56270, 22],
-      [`5/3/2026`, 5, `Q2`, `SWC2`, [26,7,0,31,17,1,1,1,2,0], 33487, 0, 33487, 29],
-      [`5/10/2026`, 5, `Q2`, `SWC1`, [2,6,1,16,4,2,0,12,3,0], 7103, 0, 7103, 22],
-      [`5/10/2026`, 5, `Q2`, `SWC2`, [7,10,0,17,12,0,0,0,0,0], 14300, 0, 14300, 24],
-      [`5/17/2026`, 5, `Q2`, `SWC1`, [4,1,0,9,5,1,4,1,0,0], 5715, 0, 5715, 14],
-      [`5/17/2026`, 5, `Q2`, `SWC2`, [13,1,0,15,14,0,0,0,0,0], 15700, 0, 15700, 19],
-      [`5/24/2026`, 5, `Q2`, `SWC1`, [14,2,2,16,7,2,1,1,13,0], 17418, 0, 17418, 24],
-      [`5/24/2026`, 5, `Q2`, `SWC2`, [28,3,0,37,10,5,0,3,1,0], 33816, 0, 33816, 27],
-      [`5/31/2026`, 5, `Q2`, `SWC1`, [38,8,0,19,6,2,2,9,10,0], 44315, 0, 44315, 26],
-      [`5/31/2026`, 5, `Q2`, `SWC2`, [7,11,0,12,11,0,0,0,0,0], 14250, 0, 14250, 26],
-      [`6/7/2026`, 6, `Q2`, `SWC1`, [0,3,0,19,7,2,1,2,0,0], 3810, 13000, 16810, 20],
-      [`6/7/2026`, 6, `Q2`, `SWC2`, [14,3,1,27,17,0,1,3,5,0], 19280, 20000, 39280, 34],
-      [`6/14/2026`, 6, `Q2`, `SWC1`, [0,4,0,10,4,1,1,0,0,0], 3230, 0, 3230, 15],
-      [`6/14/2026`, 6, `Q2`, `SWC2`, [22,4,0,23,6,0,0,0,0,0], 26600, 0, 26600, 24],
-      [`6/21/2026`, 6, `Q2`, `SWC1`, [9,5,0,12,9,0,0,2,7,0], 13167, 131300, 144467, 26],
-      [`6/21/2026`, 6, `Q2`, `SWC2`, [22,5,0,28,12,4,0,4,0,0], 28000, 0, 28000, 23],
-      [`6/28/2026`, 6, `Q2`, `SWC1`, [4,4,0,12,1,3,1,10,0,0], 7370, 21500, 28870, 22],
-      [`6/28/2026`, 6, `Q2`, `SWC2`, [8,8,0,19,2,1,0,6,0,0], 14050, 0, 14050, 20],
-      [`7/5/2026`, 7, `Q3`, `SWC1`, [10,1,0,34,10,103,1,1,0,0], 16475, 13000, 29475, 27],
-      [`7/5/2026`, 7, `Q3`, `SWC2`, [22,4,0,35,6,1,2,10,7,0], 27897, 0, 27897, 28],
-      [`7/12/2026`, 7, `Q3`, `SWC1`, [6,0,0,4,5,3,0,1,7,0], 6722, 0, 6722, 19],
-      [`7/12/2026`, 7, `Q3`, `SWC2`, [8,2,0,11,7,1,0,0,0,0], 10470, 0, 10470, 17],
-      [`7/19/2026`, 7, `Q3`, `SWC1`, [9,1,0,9,2,3,2,9,1,0], 10626, 0, 10626, 9],
-      [`7/19/2026`, 7, `Q3`, `SWC2`, [12,13,0,20,9,0,0,10,12,0], 21012, 0, 21012, 42],
-      [`7/26/2026`, 7, `Q3`, `SWC1`, [7,0,0,14,4,4,2,6,4,0], 8734, 0, 8734, 14],
-      [`7/26/2026`, 7, `Q3`, `SWC2`, [14,0,1,19,1,0,0,0,0,0], 16150, 0, 16150, 20],
-      [`8/2/2026`, 8, `Q3`, `SWC1`, [1,5,0,10,6,3,0,0,0,0], 4860, 13000, 17860, 13],
-      [`8/2/2026`, 8, `Q3`, `SWC2`, [22,10,11,35,11,5,3,6,3,0], 33413, 0, 33413, 35],
-      [`8/9/2026`, 8, `Q3`, `SWC1`, [18,2,0,9,7,1,2,3,0,0], 20305, 21500, 41805, 15],
-      [`8/9/2026`, 8, `Q3`, `SWC2`, [26,6,0,15,3,1,0,1,4,4], 30680, 136100, 166780, 21],
-      [`8/16/2026`, 8, `Q3`, `SWC1`, [0,3,0,14,2,1,1,15,5,0], 3110, 0, 3110, 14],
-      [`8/16/2026`, 8, `Q3`, `SWC2`, [181,9,0,37,12,1,5,1,2,0], 189877, 0, 189877, 39],
-      [`8/23/2026`, 8, `Q3`, `SWC1`, [11,6,0,6,8,1,1,7,0,0], 15065, 0, 15065, 19],
-      [`8/23/2026`, 8, `Q3`, `SWC2`, [16,3,0,36,10,1,4,1,5,0], 21670, 0, 21670, 33],
-      [`8/30/2026`, 8, `Q3`, `SWC1`, [3,4,0,10,2,3,0,1,0,0], 6165, 0, 6165, 14],
-      [`8/30/2026`, 8, `Q3`, `SWC2`, [8,2,0,29,5,3,0,0,1,0], 12211, 0, 12211, 22],
-      [`9/6/2026`, 9, `Q3`, `SWC1`, [3,1,0,19,6,0,0,0,0,0], 5700, 34500, 40200, 19],
-      [`9/6/2026`, 9, `Q3`, `SWC2`, [29,4,0,15,3,1,2,6,19,0], 32739, 0, 32739, 24],
-      [`9/13/2026`, 9, `Q3`, `SWC1`, [3,1,0,21,5,0,1,2,0,0], 5870, 0, 5870, 17],
-      [`9/13/2026`, 9, `Q3`, `SWC2`, [9,2,0,17,9,1,4,2,3,0], 12223, 0, 12223, 31],
-      [`9/20/2026`, 9, `Q3`, `SWC1`, [24,3,0,12,9,2,4,10,0,0], 27280, 0, 27280, 25],
-      [`9/20/2026`, 9, `Q3`, `SWC2`, [11,4,0,14,10,4,3,3,2,0], 15027, 0, 15027, 29],
-      [`9/27/2026`, 9, `Q3`, `SWC1`, [11,3,0,2,2,2,1,5,0,0], 12875, 39810, 52685, 21],
-      [`9/27/2026`, 9, `Q3`, `SWC2`, [4,4,0,25,6,2,0,0,0,0], 8840, 0, 8840, 20],
-      [`10/4/2026`, 10, `Q4`, `SWC1`, [12,3,0,44,11,1,2,4,2,0], 18512, 13000, 31512, 35],
-      [`10/4/2026`, 10, `Q4`, `SWC2`, [17,12,0,13,9,0,0,0,0,0], 24750, 0, 24750, 19],
-      [`10/11/2026`, 10, `Q4`, `SWC1`, [23,5,0,25,11,1,3,12,0,0], 28660, 35500, 64160, 30],
-      [`10/11/2026`, 10, `Q4`, `SWC2`, [2,3,0,2,6,2,1,4,5,0], 4075, 0, 4075, 10],
-      [`10/18/2026`, 10, `Q4`, `SWC1`, [10,1,0,38,12,2,3,12,6,0], 15036, 0, 15036, 35],
-      [`10/18/2026`, 10, `Q4`, `SWC2`, [13,6,0,14,6,0,0,1,5,0], 17710, 10000, 27710, 23],
-      [`10/25/2026`, 10, `Q4`, `SWC1`, [3,3,1,27,3,2,1,2,0,0], 7610, 0, 7610, 20],
-      [`10/25/2026`, 10, `Q4`, `SWC2`, [14,4,0,13,4,0,0,0,9,0], 17509, 0, 17509, 21],
-      [`11/1/2026`, 11, `Q4`, `SWC1`, [23,3,0,14,3,1,0,12,6,0], 26136, 0, 26136, 17],
-      [`11/1/2026`, 11, `Q4`, `SWC2`, [29,10,0,23,1,0,0,0,0,0], 36350, 0, 36350, 21],
-      [`11/8/2026`, 11, `Q4`, `SWC1`, [9,4,0,6,2,2,0,0,0,0], 11740, 22000, 33740, 16],
-      [`11/8/2026`, 11, `Q4`, `SWC2`, [5,4,0,7,3,0,0,0,0,0], 7850, 0, 7850, 0],
-      [`11/15/2026`, 11, `Q4`, `SWC1`, [6,2,0,15,3,0,0,0,0,0], 8650, 0, 8650, 15],
-      [`11/15/2026`, 11, `Q4`, `SWC2`, [4,11,0,19,9,1,0,2,0,0], 11880, 0, 11880, 23],
-      [`11/22/2026`, 11, `Q4`, `SWC1`, [7,2,0,11,5,0,0,0,0,0], 9350, 0, 9350, 15],
-      [`11/22/2026`, 11, `Q4`, `SWC2`, [11,5,0,20,4,0,0,0,0,0], 15700, 0, 15700, 20]
-    ];
+    let CASH_COUNTS = [];
 
     // [month, quarter, swc, bank, amount]
-    let CHEQUES = [
-      [1, `Q1`, `SWC1`, `Unspecified Bank`, 107016],
-      [1, `Q1`, `SWC1`, `BPI`, 15000],
-      [1, `Q1`, `SWC2`, `Unspecified Bank`, 8000],
-      [1, `Q1`, `SWC2`, `Metrobank`, 34710],
-      [2, `Q1`, `SWC1`, `BPI`, 21500],
-      [2, `Q1`, `SWC1`, `BPI`, 15000],
-      [2, `Q1`, `SWC2`, `Chinabank`, 8000],
-      [2, `Q1`, `SWC2`, `Metrobank`, 41460],
-      [3, `Q1`, `SWC1`, `BPI`, 21500],
-      [3, `Q1`, `SWC2`, `Chinabank`, 8000],
-      [3, `Q1`, `SWC1`, `BPI`, 21500],
-      [3, `Q1`, `SWC2`, `Unspecified Bank`, 64180],
-      [4, `Q2`, `SWC2`, `Metrobank`, 87178.5],
-      [4, `Q2`, `SWC2`, `Metrobank`, 39000],
-      [5, `Q2`, `SWC1`, `Unspecified Bank`, 13000],
-      [5, `Q2`, `SWC1`, `Unspecified Bank`, 21500],
-      [6, `Q2`, `SWC1`, `Unspecified Bank`, 13000],
-      [6, `Q2`, `SWC2`, `Unspecified Bank`, 20000],
-      [6, `Q2`, `SWC1`, `Unspecified Bank`, 131300],
-      [6, `Q2`, `SWC1`, `Unspecified Bank`, 21500],
-      [7, `Q3`, `SWC1`, `BPI`, 13000],
-      [8, `Q3`, `SWC1`, `BPI`, 13000],
-      [8, `Q3`, `SWC1`, `BPI`, 21500],
-      [8, `Q3`, `SWC2`, `BPI`, 136100],
-      [9, `Q3`, `SWC1`, `BPI`, 21500],
-      [9, `Q3`, `SWC1`, `BPI`, 13000],
-      [9, `Q3`, `SWC1`, `Metrobank`, 39810],
-      [10, `Q4`, `SWC1`, `BPI`, 13000],
-      [10, `Q4`, `SWC1`, `BPI`, 21500],
-      [10, `Q4`, `SWC1`, `Metrobank`, 14000],
-      [10, `Q4`, `SWC2`, `Chinabank`, 10000],
-      [11, `Q4`, `SWC1`, `Chinabank`, 10000],
-      [11, `Q4`, `SWC1`, `BPI`, 12000]
-    ];
+    let CHEQUES = [];
 
     // Anonymized Disbursement Records: [month, quarter, category, amount]
-    let DISBURSEMENTS = [
-      // Jan (M1)
-      [1, `Q1`, `Ministry & Community`, 1000],
-      [1, `Q1`, `Utilities (Power & Water)`, 3000],
-      [1, `Q1`, `Love Gifts & Benevolence`, 2000],
-      [1, `Q1`, `Utilities (Power & Water)`, 7806],
-      [1, `Q1`, `Leadership & Planning`, 4000],
-      // Feb (M2)
-      [2, `Q1`, `Love Gifts & Benevolence`, 1000],
-      [2, `Q1`, `Love Gifts & Benevolence`, 7000],
-      [2, `Q1`, `Leadership & Planning`, 4000],
-      [2, `Q1`, `Admin, Tax & Operations`, 4500],
-      [2, `Q1`, `Ministry & Community`, 2500],
-      [2, `Q1`, `Utilities (Power & Water)`, 3000],
-      [2, `Q1`, `Utilities (Power & Water)`, 6280],
-      [2, `Q1`, `Love Gifts & Benevolence`, 5000],
-      // Mar (M3)
-      [3, `Q1`, `Love Gifts & Benevolence`, 7000],
-      [3, `Q1`, `Love Gifts & Benevolence`, 1000],
-      [3, `Q1`, `Ministry & Community`, 2000],
-      [3, `Q1`, `Ministry & Community`, 2000],
-      [3, `Q1`, `Love Gifts & Benevolence`, 1000],
-      [3, `Q1`, `Ministry & Community`, 1000],
-      [3, `Q1`, `Love Gifts & Benevolence`, 1000],
-      // Apr (M4)
-      [4, `Q2`, `Love Gifts & Benevolence`, 500],
-      [4, `Q2`, `Love Gifts & Benevolence`, 5000],
-      [4, `Q2`, `Utilities (Power & Water)`, 3000],
-      [4, `Q2`, `Utilities (Power & Water)`, 13028],
-      [4, `Q2`, `Love Gifts & Benevolence`, 10000],
-      [4, `Q2`, `Love Gifts & Benevolence`, 6450],
-      [4, `Q2`, `Ministry & Community`, 1000],
-      [4, `Q2`, `Ministry & Community`, 6000],
-      [4, `Q2`, `Leadership & Planning`, 6395],
-      [4, `Q2`, `Ministry & Community`, 3000],
-      // May (M5)
-      [5, `Q2`, `Ministry & Community`, 2500],
-      [5, `Q2`, `Utilities (Power & Water)`, 3000],
-      [5, `Q2`, `Ministry & Community`, 3500],
-      [5, `Q2`, `Ministry & Community`, 1000],
-      [5, `Q2`, `Ministry & Community`, 1000],
-      [5, `Q2`, `Utilities (Power & Water)`, 13477],
-      [5, `Q2`, `Ministry & Community`, 2000],
-      [5, `Q2`, `Love Gifts & Benevolence`, 10000],
-      [5, `Q2`, `Ministry & Community`, 3000],
-      [5, `Q2`, `Ministry & Community`, 1500],
-      [5, `Q2`, `Ministry & Community`, 1869],
-      [5, `Q2`, `Love Gifts & Benevolence`, 3000],
-      [5, `Q2`, `Love Gifts & Benevolence`, 500],
-      [5, `Q2`, `Tech, Comms & Subscriptions`, 2976],
-      [5, `Q2`, `Admin, Tax & Operations`, 1500],
-      [5, `Q2`, `Ministry & Community`, 5000],
-      [5, `Q2`, `Ministry & Community`, 1000],
-      [5, `Q2`, `Ministry & Community`, 1000],
-      [5, `Q2`, `Leadership & Planning`, 9977],
-      // Jun (M6)
-      [6, `Q2`, `Utilities (Power & Water)`, 3000],
-      [6, `Q2`, `Ministry & Community`, 1802],
-      [6, `Q2`, `Love Gifts & Benevolence`, 10000],
-      [6, `Q2`, `Ministry & Community`, 500],
-      [6, `Q2`, `Ministry & Community`, 6000],
-      [6, `Q2`, `Ministry & Community`, 1000],
-      [6, `Q2`, `Love Gifts & Benevolence`, 200],
-      // Jul (M7)
-      [7, `Q3`, `Leadership & Planning`, 10000],
-      [7, `Q3`, `Utilities (Power & Water)`, 3000],
-      [7, `Q3`, `Tech, Comms & Subscriptions`, 10088],
-      [7, `Q3`, `Tech, Comms & Subscriptions`, 659],
-      [7, `Q3`, `Admin, Tax & Operations`, 1200],
-      [7, `Q3`, `Utilities (Power & Water)`, 14981],
-      [7, `Q3`, `Love Gifts & Benevolence`, 1500],
-      [7, `Q3`, `Ministry & Community`, 3000],
-      [7, `Q3`, `Ministry & Community`, 3000],
-      [7, `Q3`, `Admin, Tax & Operations`, 4150],
-      [7, `Q3`, `Love Gifts & Benevolence`, 3000],
-      [7, `Q3`, `Love Gifts & Benevolence`, 500],
-      [7, `Q3`, `Ministry & Community`, 3000],
-      [7, `Q3`, `Love Gifts & Benevolence`, 500],
-      // Aug (M8)
-      [8, `Q3`, `Leadership & Planning`, 9548],
-      [8, `Q3`, `Ministry & Community`, 3000],
-      [8, `Q3`, `Love Gifts & Benevolence`, 500],
-      [8, `Q3`, `Love Gifts & Benevolence`, 250],
-      [8, `Q3`, `Utilities (Power & Water)`, 3000],
-      [8, `Q3`, `Leadership & Planning`, 25000],
-      [8, `Q3`, `Ministry & Community`, 1902.75],
-      [8, `Q3`, `Utilities (Power & Water)`, 11541],
-      [8, `Q3`, `Tech, Comms & Subscriptions`, 7564],
-      [8, `Q3`, `Leadership & Planning`, 806],
-      [8, `Q3`, `Tech, Comms & Subscriptions`, 856],
-      [8, `Q3`, `Love Gifts & Benevolence`, 6000],
-      [8, `Q3`, `Ministry & Community`, 1500],
-      [8, `Q3`, `Ministry & Community`, 3000],
-      [8, `Q3`, `Love Gifts & Benevolence`, 8000],
-      [8, `Q3`, `Admin, Tax & Operations`, 2022],
-      [8, `Q3`, `Ministry & Community`, 3000],
-      [8, `Q3`, `Ministry & Community`, 3000],
-      [8, `Q3`, `Ministry & Community`, 4000],
-      [8, `Q3`, `Ministry & Community`, 1500],
-      [8, `Q3`, `Ministry & Community`, 500],
-      // Sep (M9)
-      [9, `Q3`, `Utilities (Power & Water)`, 3000],
-      [9, `Q3`, `Love Gifts & Benevolence`, 3000],
-      [9, `Q3`, `Love Gifts & Benevolence`, 1500],
-      [9, `Q3`, `Love Gifts & Benevolence`, 8000],
-      [9, `Q3`, `Admin, Tax & Operations`, 4000],
-      [9, `Q3`, `Ministry & Community`, 821],
-      [9, `Q3`, `Ministry & Community`, 3000],
-      [9, `Q3`, `Tech, Comms & Subscriptions`, 7631],
-      // Oct (M10)
-      [10, `Q4`, `Leadership & Planning`, 10000],
-      [10, `Q4`, `Utilities (Power & Water)`, 3000],
-      [10, `Q4`, `Ministry & Community`, 3000],
-      [10, `Q4`, `Leadership & Planning`, 774],
-      [10, `Q4`, `Admin, Tax & Operations`, 2400],
-      [10, `Q4`, `Love Gifts & Benevolence`, 8000],
-      [10, `Q4`, `Love Gifts & Benevolence`, 2000],
-      [10, `Q4`, `Ministry & Community`, 2100],
-      [10, `Q4`, `Tech, Comms & Subscriptions`, 7734],
-      // Nov (M11)
-      [11, `Q4`, `Utilities (Power & Water)`, 3000],
-      [11, `Q4`, `Leadership & Planning`, 9198],
-      [11, `Q4`, `Ministry & Community`, 6700],
-      [11, `Q4`, `Ministry & Community`, 3000],
-      [11, `Q4`, `Love Gifts & Benevolence`, 1000],
-      [11, `Q4`, `Admin, Tax & Operations`, 1500],
-      [11, `Q4`, `Admin, Tax & Operations`, 800],
-      [11, `Q4`, `Love Gifts & Benevolence`, 8000]
-    ];
+    let DISBURSEMENTS = [];
 
-    let POSTING_STATUS = [
-      { month: 1, name: `January`, short: `Jan`, closed: true },
-      { month: 2, name: `February`, short: `Feb`, closed: true },
-      { month: 3, name: `March`, short: `Mar`, closed: true },
-      { month: 4, name: `April`, short: `Apr`, closed: true },
-      { month: 5, name: `May`, short: `May`, closed: true },
-      { month: 6, name: `June`, short: `Jun`, closed: true },
-      { month: 7, name: `July`, short: `Jul`, closed: true },
-      { month: 8, name: `August`, short: `Aug`, closed: true },
-      { month: 9, name: `September`, short: `Sep`, closed: true },
-      { month: 10, name: `October`, short: `Oct`, closed: true },
-      { month: 11, name: `November`, short: `Nov`, closed: false },
-      { month: 12, name: `December`, short: `Dec`, closed: true }
-    ];
+    let POSTING_STATUS = [];
 
-    let COMMUNITY_BASE = [
-      { community: `Unassigned / Digital`, count: 47 },
-      { community: `Kindred Heart`, count: 40 },
-      { community: `Young Professional`, count: 33 },
-      { community: `Young Couple`, count: 22 },
-      { community: `Adult Couple`, count: 16 },
-      { community: `Youth`, count: 14 },
-      { community: `Abroad`, count: 12 },
-      { community: `Remix`, count: 9 },
-      { community: `Pastoral`, count: 6 },
-      { community: `Southridge`, count: 3 }
-    ];
+    let COMMUNITY_BASE = [];
 
     const DENOM_META = [
       { label: `₱1,000`, value: 1000, idx: 0 },
@@ -2385,7 +2159,7 @@
       const st = document.getElementById(`data-status`);
       if (st) {
         st.textContent = m.live
-          ? `Live figures from the church’s records, refreshed ` + longDate(new Date(m.asOf + `T12:00:00`)) + `. Updates appear within a few minutes of posting.`
+          ? `Figures from the church’s records, refreshed ` + longDate(new Date(m.asOf + `T12:00:00`)) + `. Updates appear within a few minutes of posting.`
           : `Showing the saved report as of ` + longDate(new Date(m.asOf + `T12:00:00`)) + `.`;
       }
     }
@@ -2398,42 +2172,166 @@
         Array.isArray(d.communityBase);
     }
 
-    function loadLiveData() {
-      if (!DATA_URL || DATA_URL.indexOf(`PASTE_`) === 0) return Promise.resolve(false);
+    // =========================================================================
+    // ACCESS: sign-up, one-time passcode, and signed-in sessions
+    // =========================================================================
+    const SESSION_KEY = `rlcc-report-session`;
+    let SESSION = null;
+
+    function readSession() {
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY) || `null`); } catch (e) { return null; }
+    }
+    function saveSession(o) {
+      SESSION = o;
+      try { localStorage.setItem(SESSION_KEY, JSON.stringify(o)); } catch (e) { /* storage blocked: stays for this tab only */ }
+    }
+    function clearSession() {
+      SESSION = null;
+      try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
+    }
+
+    function gateEl(id) { return document.getElementById(id); }
+
+    function setGateMsg(text, kind) {
+      const el = gateEl(`gate-msg`);
+      el.textContent = text || ``;
+      el.className = `gate-msg` + (kind ? ` is-` + kind : ``);
+    }
+
+    function showGate(step, msg, kind) {
+      document.body.classList.add(`is-locked`);
+      gateEl(`gate-request`).hidden = step !== `request`;
+      gateEl(`gate-verify`).hidden = step !== `verify`;
+      setGateMsg(msg, kind);
+    }
+
+    function apiCall(params) {
       const ctl = new AbortController();
-      const timer = setTimeout(function () { ctl.abort(); }, 15000);
-      return fetch(DATA_URL, { signal: ctl.signal, redirect: `follow` })
+      const timer = setTimeout(function () { ctl.abort(); }, 20000);
+      return fetch(DATA_URL + `?` + new URLSearchParams(params).toString(), { signal: ctl.signal, redirect: `follow` })
         .then(function (res) {
+          clearTimeout(timer);
           if (!res.ok) throw new Error(`HTTP ` + res.status);
           return res.json();
         })
+        .catch(function (err) { clearTimeout(timer); throw err; });
+    }
+
+    function isValidFeed(d) {
+      return d && d.ok === true &&
+        Array.isArray(d.cashCounts) && d.cashCounts.length > 0 &&
+        Array.isArray(d.cheques) && Array.isArray(d.disbursements) &&
+        Array.isArray(d.postingStatus) && d.postingStatus.length === 12 &&
+        Array.isArray(d.communityBase);
+    }
+
+    function loadReport() {
+      if (!SESSION) { showGate(`request`); return Promise.resolve(false); }
+      setGateMsg(`Loading the report…`);
+      return apiCall({ action: `report`, email: SESSION.email, token: SESSION.token })
         .then(function (d) {
-          clearTimeout(timer);
+          if (d && d.error === `auth`) {
+            clearSession();
+            showGate(`verify`, `Your sign-in has ended. Please enter a new passcode, or request access again.`, `error`);
+            return false;
+          }
           if (!isValidFeed(d)) throw new Error(`Unexpected data`);
           CASH_COUNTS = d.cashCounts;
           CHEQUES = d.cheques;
           DISBURSEMENTS = d.disbursements;
           POSTING_STATUS = d.postingStatus;
           COMMUNITY_BASE = d.communityBase;
-          REPORT_META.live = true;
           deriveMeta(String(d.generatedAt || ``).slice(0, 10) || SNAPSHOT_AS_OF);
           REPORT_META.live = true;
           applyMetaToPage();
+          document.body.classList.remove(`is-locked`);
           renderAll();
           return true;
         })
         .catch(function (err) {
-          clearTimeout(timer);
-          console.warn(`Live data unavailable; showing saved snapshot.`, err);
+          console.warn(`Report unavailable`, err);
+          showGate(SESSION ? `verify` : `request`, `We could not load the report just now. Please try again in a moment.`, `error`);
           return false;
         });
     }
 
+    function wireGate() {
+      gateEl(`to-verify`).addEventListener(`click`, function () {
+        gateEl(`ver-email`).value = gateEl(`req-email`).value;
+        showGate(`verify`);
+      });
+      gateEl(`to-request`).addEventListener(`click`, function () { showGate(`request`); });
+
+      gateEl(`request-form`).addEventListener(`submit`, function (ev) {
+        ev.preventDefault();
+        const name = gateEl(`req-name`).value.trim();
+        const email = gateEl(`req-email`).value.trim();
+        if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setGateMsg(`Please enter your full name and a valid email address.`, `error`);
+          return;
+        }
+        const btn = gateEl(`req-btn`);
+        btn.disabled = true;
+        setGateMsg(`Sending your request…`);
+        apiCall({ action: `register`, name: name, email: email })
+          .then(function (d) {
+            btn.disabled = false;
+            if (d && d.ok) {
+              gateEl(`ver-email`).value = email;
+              setGateMsg(`Thank you, ` + name.split(` `)[0] + `. Your request was received. Once the church office approves it, you will be given a passcode. Then tap “I already have a passcode.”`, `ok`);
+            } else {
+              setGateMsg(`We could not accept that request. Please check your details and try again.`, `error`);
+            }
+          })
+          .catch(function () {
+            btn.disabled = false;
+            setGateMsg(`We could not reach the church’s records. Please try again in a moment.`, `error`);
+          });
+      });
+
+      gateEl(`verify-form`).addEventListener(`submit`, function (ev) {
+        ev.preventDefault();
+        const email = gateEl(`ver-email`).value.trim();
+        const code = gateEl(`ver-code`).value.replace(/\D/g, ``);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || code.length !== 6) {
+          setGateMsg(`Please enter your email and the 6-digit passcode.`, `error`);
+          return;
+        }
+        const btn = gateEl(`ver-btn`);
+        btn.disabled = true;
+        setGateMsg(`Checking your passcode…`);
+        apiCall({ action: `verify`, email: email, code: code })
+          .then(function (d) {
+            btn.disabled = false;
+            if (d && d.ok && d.token) {
+              gateEl(`ver-code`).value = ``;
+              saveSession({ email: email.toLowerCase(), token: d.token, name: d.name || `` });
+              loadReport();
+            } else {
+              setGateMsg(`That passcode is not valid or has expired. Please check it, or ask the church office for a new one.`, `error`);
+            }
+          })
+          .catch(function () {
+            btn.disabled = false;
+            setGateMsg(`We could not reach the church’s records. Please try again in a moment.`, `error`);
+          });
+      });
+
+      gateEl(`signout-btn`).addEventListener(`click`, function () {
+        clearSession();
+        showGate(`request`, `You have been signed out on this device.`, `ok`);
+        window.scrollTo(0, 0);
+      });
+    }
+
     document.addEventListener(`DOMContentLoaded`, function () {
-      deriveMeta(SNAPSHOT_AS_OF);
-      applyMetaToPage();
-      renderAll();
-      loadLiveData();
+      wireGate();
+      SESSION = readSession();
+      if (SESSION && SESSION.email && SESSION.token) {
+        loadReport();
+      } else {
+        showGate(`request`);
+      }
     });
   </script>
 </body>
