@@ -781,13 +781,14 @@
         scroll-behavior: auto !important;
       }
     }
+    .data-status { font-size: var(--label-size); color: var(--on-surface-variant); margin-top: var(--space-sm); }
   </style>
 </head>
 <body>
   <header class="title-band">
     <div class="title-band-inner">
       <div>
-        <p class="title-kicker">Fiscal Year 2026 Public Stewardship Report &middot; January 1 – November 22, 2026</p>
+        <p class="title-kicker" id="title-kicker">Fiscal Year 2026 Public Stewardship Report &middot; January 1 – November 22, 2026</p>
         <h1>RLCC Financial Stewardship Dashboard</h1>
         <p class="lede">
           Public summary of Sunday worship collections, cheque deposits, categorized ministry disbursements, and monthly fiscal closing status. All individual giver, staff, and steward identities have been omitted.
@@ -844,7 +845,7 @@
       <button type="button" id="reset-filters-btn" class="btn-secondary" onclick="resetAllFilters()" disabled>Reset Filters</button>
 
       <div class="filter-context-note">
-        <span id="active-filter-summary">Showing all recorded FY 2026 activity from January 4 through November 22, 2026.</span>
+        <span id="active-filter-summary">Loading the latest figures…</span>
         <span id="category-filter-pill" class="stamp-tag" hidden></span>
       </div>
     </section>
@@ -1006,12 +1007,13 @@
     </section>
 
     <footer class="report-footer">
-      <p>
+      <p id="footer-grounding">
         <strong>Data Grounding &amp; Privacy Notice:</strong> Derived from RLCC FY 2026 Cash Count Records (91 service counts across 46 Sundays, Jan 4 – Nov 22, 2026), Cheque Register (33 deposits), Categorized Disbursement Records (116 entries), Posting Status Schedule (Months 1–12), and Community Directory Aggregates. All personal names, account numbers, and individual transaction ledgers are omitted for public reporting.
       </p>
-      <p>
+      <p id="footer-coverage">
         <strong>Note on Coverage:</strong> November 2026 remains open for posting as of November 23, 2026. December 2026 reflects zero recorded collections to date.
       </p>
+      <p id="data-status" class="data-status" aria-live="polite"></p>
     </footer>
   </main>
 
@@ -1022,7 +1024,7 @@
     // =========================================================================
 
     // [date, month, quarter, swc, [1000,500,200,100,50,20,10,5,1,0.25], cash, cheque, total, envelopes]
-    const CASH_COUNTS = [
+    let CASH_COUNTS = [
       [`1/4/2026`, 1, `Q1`, `SWC1`, [11,2,0,17,15,1,1,0,1,0], 14481, 0, 14481, 22],
       [`1/4/2026`, 1, `Q1`, `SWC2`, [10,7,0,29,11,4,2,6,0,0], 17080, 0, 17080, 34],
       [`1/11/2026`, 1, `Q1`, `SWC1`, [53,1,0,10,9,5,1,19,1,0], 55156, 122016, 177172, 25],
@@ -1117,7 +1119,7 @@
     ];
 
     // [month, quarter, swc, bank, amount]
-    const CHEQUES = [
+    let CHEQUES = [
       [1, `Q1`, `SWC1`, `Unspecified Bank`, 107016],
       [1, `Q1`, `SWC1`, `BPI`, 15000],
       [1, `Q1`, `SWC2`, `Unspecified Bank`, 8000],
@@ -1154,7 +1156,7 @@
     ];
 
     // Anonymized Disbursement Records: [month, quarter, category, amount]
-    const DISBURSEMENTS = [
+    let DISBURSEMENTS = [
       // Jan (M1)
       [1, `Q1`, `Ministry & Community`, 1000],
       [1, `Q1`, `Utilities (Power & Water)`, 3000],
@@ -1284,7 +1286,7 @@
       [11, `Q4`, `Love Gifts & Benevolence`, 8000]
     ];
 
-    const POSTING_STATUS = [
+    let POSTING_STATUS = [
       { month: 1, name: `January`, short: `Jan`, closed: true },
       { month: 2, name: `February`, short: `Feb`, closed: true },
       { month: 3, name: `March`, short: `Mar`, closed: true },
@@ -1299,7 +1301,7 @@
       { month: 12, name: `December`, short: `Dec`, closed: true }
     ];
 
-    const COMMUNITY_BASE = [
+    let COMMUNITY_BASE = [
       { community: `Unassigned / Digital`, count: 47 },
       { community: `Kindred Heart`, count: 40 },
       { community: `Young Professional`, count: 33 },
@@ -1512,17 +1514,12 @@
       const pillEl = document.getElementById(`category-filter-pill`);
       const headerScope = document.getElementById(`header-scope-value`);
 
-      let periodLabel = `Jan – Nov 2026 (YTD)`;
+      let periodLabel = ytdLabel();
       if (state.month !== `ALL`) {
         const mInfo = POSTING_STATUS.find(function (p) { return p.month === Number(state.month); });
-        periodLabel = (mInfo ? mInfo.name : `Month ` + state.month) + ` 2026`;
+        periodLabel = (mInfo ? mInfo.name : `Month ` + state.month) + ` ` + REPORT_META.year;
       } else if (state.quarter !== `ALL`) {
-        const qMap = {
-          Q1: `Q1 2026 (Jan – Mar)`,
-          Q2: `Q2 2026 (Apr – Jun)`,
-          Q3: `Q3 2026 (Jul – Sep)`,
-          Q4: `Q4 2026 (Oct – Nov)`
-        };
+        const qMap = quarterLabels();
         periodLabel = qMap[state.quarter] || state.quarter;
       }
 
@@ -1618,11 +1615,11 @@
       const canvas = document.getElementById(`cashflow-chart`);
       if (!canvas || typeof Chart === `undefined`) return;
 
-      const months = POSTING_STATUS.filter(function (p) { return p.month <= 11; });
+      const months = POSTING_STATUS.filter(function (p) { return p.month <= REPORT_META.lastMonth; });
       const labels = months.map(function (p) { return p.short; });
 
-      const collByMonth = new Array(11).fill(0);
-      const disbByMonth = new Array(11).fill(0);
+      const collByMonth = new Array(12).fill(0);
+      const disbByMonth = new Array(12).fill(0);
 
       CASH_COUNTS.forEach(function (r) {
         if (state.service === `ALL` || r[3] === state.service) {
@@ -1642,7 +1639,7 @@
       const cumColl = [];
       const cumDisb = [];
 
-      for (let i = 0; i < 11; i++) {
+      for (let i = 0; i < months.length; i++) {
         runningColl += collByMonth[i];
         runningDisb += disbByMonth[i];
         cumColl.push(runningColl);
@@ -2110,7 +2107,8 @@
 
     function renderCommunityChart() {
       const canvas = document.getElementById(`community-chart`);
-      if (!canvas || typeof Chart === `undefined` || communityChart) return;
+      if (!canvas || typeof Chart === `undefined`) return;
+      if (communityChart) communityChart.destroy();
 
       const data1 = getToken(`--data-1`);
       const dataCtx = getToken(`--data-context`);
@@ -2265,8 +2263,163 @@
       renderMonthlyTable();
     }
 
+    // =========================================================================
+    // LIVE DATA LOADER
+    // The figures above are a saved snapshot. When DATA_URL points to the
+    // Apps Script web app, the page replaces them with live totals on load.
+    // =========================================================================
+    const DATA_URL = `https://script.google.com/macros/s/AKfycbzg8U8neUg1zFa1LGR_pZBR5JTpZuNKsDaj5wvl6gPuRytCM1Yysd9AfGozvI62urbL/exec`;
+    const SNAPSHOT_AS_OF = `2026-11-23`;
+
+    let REPORT_META = { year: 2026, firstMonth: 1, lastMonth: 11, asOf: SNAPSHOT_AS_OF, live: false };
+    const MONTH_NAMES = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`];
+
+    function parseMDY(str) {
+      const p = String(str).split(`/`);
+      return new Date(Number(p[2]), Number(p[0]) - 1, Number(p[1]));
+    }
+
+    function longDate(d) {
+      return d.toLocaleDateString(`en-US`, { month: `long`, day: `numeric`, year: `numeric` });
+    }
+
+    function deriveMeta(asOfIso) {
+      const dates = CASH_COUNTS.map(function (r) { return parseMDY(r[0]); }).sort(function (a, b) { return a - b; });
+      const first = dates.length ? dates[0] : new Date(REPORT_META.year, 0, 1);
+      const last = dates.length ? dates[dates.length - 1] : first;
+      REPORT_META = {
+        year: last.getFullYear(),
+        firstMonth: first.getMonth() + 1,
+        lastMonth: last.getMonth() + 1,
+        firstDate: first,
+        lastDate: last,
+        sundays: new Set(CASH_COUNTS.map(function (r) { return r[0]; })).size,
+        asOf: asOfIso || REPORT_META.asOf,
+        live: REPORT_META.live
+      };
+    }
+
+    function ytdLabel() {
+      const a = MONTH_NAMES[REPORT_META.firstMonth - 1].slice(0, 3);
+      const b = MONTH_NAMES[REPORT_META.lastMonth - 1].slice(0, 3);
+      return a + ` – ` + b + ` ` + REPORT_META.year + ` (YTD)`;
+    }
+
+    function quarterLabels() {
+      const y = REPORT_META.year;
+      const out = {};
+      [[`Q1`, 1, 3], [`Q2`, 4, 6], [`Q3`, 7, 9], [`Q4`, 10, 12]].forEach(function (q) {
+        const lo = Math.max(q[1], REPORT_META.firstMonth);
+        const hi = Math.min(q[2], REPORT_META.lastMonth);
+        const a = MONTH_NAMES[(hi >= lo ? lo : q[1]) - 1].slice(0, 3);
+        const b = MONTH_NAMES[(hi >= lo ? hi : q[2]) - 1].slice(0, 3);
+        out[q[0]] = q[0] + ` ` + y + ` (` + a + (a === b ? `` : ` – ` + b) + `)`;
+      });
+      return out;
+    }
+
+    function applyMetaToPage() {
+      const m = REPORT_META;
+      const y = m.year;
+      document.title = `RLCC Financial Stewardship Report — FY ` + y;
+
+      const kicker = document.getElementById(`title-kicker`);
+      if (kicker) {
+        kicker.textContent = `Fiscal Year ` + y + ` Public Stewardship Report · ` +
+          MONTH_NAMES[m.firstMonth - 1] + ` 1 – ` + longDate(m.lastDate);
+      }
+
+      // Month dropdown: every month up to the latest month with data
+      const sel = document.getElementById(`month-select`);
+      if (sel) {
+        const keep = state.month;
+        let html = `<option value="ALL">All Months in Period</option>`;
+        POSTING_STATUS.forEach(function (p) {
+          if (p.month > m.lastMonth) return;
+          html += `<option value="` + p.month + `">` + p.name + ` ` + y + (p.closed ? `` : ` (Open)`) + `</option>`;
+        });
+        sel.innerHTML = html;
+        sel.value = String(keep);
+      }
+
+      // Footer notices
+      const g = document.getElementById(`footer-grounding`);
+      if (g) {
+        g.innerHTML = `<strong>Data Grounding &amp; Privacy Notice:</strong> Derived from RLCC FY ` + y +
+          ` Cash Count Records (` + CASH_COUNTS.length + ` service counts across ` + m.sundays + ` Sundays, ` +
+          longDate(m.firstDate).replace(`, ` + y, ``) + ` – ` + longDate(m.lastDate) + `), Cheque Register (` +
+          CHEQUES.length + ` deposits), Categorized Disbursement Records (` + DISBURSEMENTS.length +
+          ` entries), Posting Status Schedule (Months 1–12), and Community Directory Aggregates. ` +
+          `All personal names, account numbers, and individual transaction ledgers are omitted for public reporting.`;
+      }
+
+      const c = document.getElementById(`footer-coverage`);
+      if (c) {
+        const open = POSTING_STATUS.filter(function (p) { return !p.closed && p.month <= m.lastMonth; })
+          .map(function (p) { return p.name + ` ` + y; });
+        const asOf = longDate(new Date(m.asOf + `T12:00:00`));
+        let txt = `<strong>Note on Coverage:</strong> `;
+        txt += open.length
+          ? open.join(` and `) + (open.length > 1 ? ` remain` : ` remains`) + ` open for posting as of ` + asOf + `.`
+          : `All months with recorded collections are closed as of ` + asOf + `.`;
+        if (m.lastMonth < 12) {
+          txt += ` Months after ` + MONTH_NAMES[m.lastMonth - 1] + ` ` + y + ` reflect zero recorded collections to date.`;
+        }
+        c.innerHTML = txt;
+      }
+
+      const st = document.getElementById(`data-status`);
+      if (st) {
+        st.textContent = m.live
+          ? `Live figures from the church’s records, refreshed ` + longDate(new Date(m.asOf + `T12:00:00`)) + `. Updates appear within a few minutes of posting.`
+          : `Showing the saved report as of ` + longDate(new Date(m.asOf + `T12:00:00`)) + `.`;
+      }
+    }
+
+    function isValidFeed(d) {
+      return d && d.ok === true &&
+        Array.isArray(d.cashCounts) && d.cashCounts.length > 0 &&
+        Array.isArray(d.cheques) && Array.isArray(d.disbursements) &&
+        Array.isArray(d.postingStatus) && d.postingStatus.length === 12 &&
+        Array.isArray(d.communityBase);
+    }
+
+    function loadLiveData() {
+      if (!DATA_URL || DATA_URL.indexOf(`PASTE_`) === 0) return Promise.resolve(false);
+      const ctl = new AbortController();
+      const timer = setTimeout(function () { ctl.abort(); }, 15000);
+      return fetch(DATA_URL, { signal: ctl.signal, redirect: `follow` })
+        .then(function (res) {
+          if (!res.ok) throw new Error(`HTTP ` + res.status);
+          return res.json();
+        })
+        .then(function (d) {
+          clearTimeout(timer);
+          if (!isValidFeed(d)) throw new Error(`Unexpected data`);
+          CASH_COUNTS = d.cashCounts;
+          CHEQUES = d.cheques;
+          DISBURSEMENTS = d.disbursements;
+          POSTING_STATUS = d.postingStatus;
+          COMMUNITY_BASE = d.communityBase;
+          REPORT_META.live = true;
+          deriveMeta(String(d.generatedAt || ``).slice(0, 10) || SNAPSHOT_AS_OF);
+          REPORT_META.live = true;
+          applyMetaToPage();
+          renderAll();
+          return true;
+        })
+        .catch(function (err) {
+          clearTimeout(timer);
+          console.warn(`Live data unavailable; showing saved snapshot.`, err);
+          return false;
+        });
+    }
+
     document.addEventListener(`DOMContentLoaded`, function () {
+      deriveMeta(SNAPSHOT_AS_OF);
+      applyMetaToPage();
       renderAll();
+      loadLiveData();
     });
   </script>
 </body>
